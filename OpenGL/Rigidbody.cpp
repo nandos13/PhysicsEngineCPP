@@ -14,10 +14,8 @@ void Rigidbody::Update(const float deltaTime)
 {
 	// Apply gravity
 	ApplyForce(m_gravity);
-}
 
-void Rigidbody::Draw() const
-{
+	m_position += m_velocity * deltaTime;
 }
 
 const glm::vec2 Rigidbody::GetVelocity() const

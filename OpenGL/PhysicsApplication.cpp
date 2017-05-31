@@ -1,6 +1,8 @@
 #include "PhysicsApplication.h"
 
+#include "Plane.h"
 #include "Rigidbody.h"
+#include "Circle.h"
 
 using namespace glm;
 
@@ -12,7 +14,8 @@ void PhysicsApplication::StartScene()
 	m_physObjects.clear();
 
 	// Add objects
-	m_physObjects.push_back( new Rigidbody(glm::vec2(0), glm::vec2(1, 0), 1.0f) );
+	m_physObjects.push_back( new Circle(glm::vec2(0), glm::vec2(1, 0), 1.0f, 0.5f) );
+	m_physObjects.push_back( new Plane(glm::vec2(0, -3.2f), glm::vec2(0, 1)) );
 }
 
 bool PhysicsApplication::startup()

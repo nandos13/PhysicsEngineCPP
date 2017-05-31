@@ -14,7 +14,6 @@ public:
 	~Rigidbody();
 
 	virtual void Update(const float deltaTime);
-	virtual void Draw() const;
 
 	const glm::vec2 GetVelocity() const;
 	const float GetMass() const;

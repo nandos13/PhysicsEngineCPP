@@ -2,6 +2,7 @@
 #include "Plane.h"
 
 #include <glm\glm\glm.hpp>
+#include <aie\Gizmos.h>
 
 
 Plane::Plane(const glm::vec2 pos, const glm::vec2 normal)
@@ -27,6 +28,8 @@ void Plane::Draw() const
 	// Get two points on the plane to draw between
 	glm::vec2 p1 = m_position - offset;
 	glm::vec2 p2 = m_position + offset;
+
+	Gizmos::add2DLine(p1, p2, glm::vec4(1, 0.1f, 0.1f, 1));
 }
 
 const glm::vec2 Plane::GetNormal() const
