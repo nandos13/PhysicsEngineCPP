@@ -10,9 +10,16 @@
 
 #include "Application.h"
 #include "Camera.h"
+#include "PhysicsObject.h"
 
 class PhysicsApplication : public Application
 {
+private:
+
+	std::list<PhysicsObject*> m_physObjects;
+
+	void StartScene();
+
 public:
 
 	virtual bool startup();
