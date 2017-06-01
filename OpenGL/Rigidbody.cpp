@@ -15,7 +15,7 @@ void Rigidbody::GetLocalAxes()
 
 Rigidbody::Rigidbody(const glm::vec2 pos, const glm::vec2 vel, const float mass)
 	: PhysicsObject(pos), m_velocity(vel), m_mass(mass), 
-		m_angle(0.0f), m_angularVelocity(0.0f), m_restitution(1.0f),
+		m_angle(0.0f), m_angularVelocity(0.0f), m_momentInertia(0.0f), m_restitution(1.0f),
 		m_localX(glm::vec2(0)), m_localY(glm::vec2(0)) {
 }
 
@@ -38,6 +38,16 @@ void Rigidbody::Update(const float deltaTime)
 const glm::vec2 Rigidbody::GetVelocity() const
 {
 	return m_velocity;
+}
+
+const float Rigidbody::GetAngularVelocity() const
+{
+	return m_angularVelocity;
+}
+
+const float Rigidbody::GetMomentOfInertia() const
+{
+	return m_momentInertia;
 }
 
 const float Rigidbody::GetMass() const
@@ -65,7 +75,18 @@ void Rigidbody::SetRestitution(const float r)
 	m_restitution = JakePerry::Clampf(r, 0, 1);
 }
 
-void Rigidbody::ApplyForce(const glm::vec2 force)
+const glm::vec2 Rigidbody::GetLocalXVector() const
+{
+	return m_localX;
+}
+
+const glm::vec2 Rigidbody::GetLocalYVector() const
+{
+	return m_localY;
+}
+
+void Rigidbody::ApplyForce(const glm::vec2 force, const glm::vec2 position)
 {
 	m_velocity += force / m_mass;
+	m_angularVelocity += (force.y * position.x - force.x * position.y) / (m_momentInertia);
 }

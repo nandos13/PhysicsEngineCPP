@@ -21,6 +21,8 @@ void PhysicsApplication::StartScene()
 	m_physObjects.push_back( c2 );
 
 	Box* b1 = new Box(glm::vec2(-4, 0), glm::vec2(0), 5.0f, glm::vec2(2.2f, 1.4f));
+	b1->SetAngle(45.0f);
+	b1->SetRestitution(0.1f);
 	m_physObjects.push_back( b1 );
 
 	m_physObjects.push_back( new Plane(glm::vec2(0, -3.2f), glm::vec2(0, 1)) );

@@ -8,6 +8,7 @@
 Circle::Circle(const glm::vec2 pos, const glm::vec2 vel, const float mass, const float radius)
 	: Rigidbody(pos, vel, mass), m_radius(radius) {
 	m_type = CIRCLE;
+	m_momentInertia = 0.5f * m_mass * m_radius * m_radius;
 }
 
 Circle::~Circle()

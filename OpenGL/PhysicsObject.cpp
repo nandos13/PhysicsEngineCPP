@@ -33,6 +33,11 @@ const glm::vec2 PhysicsObject::GetPosition() const
 	return m_position;
 }
 
+void PhysicsObject::SetPosition(const glm::vec2 pos)
+{
+	m_position = pos;
+}
+
 /* Set the value of gravity in the negative-y direction. */
 void PhysicsObject::SetGravity(float value)
 {

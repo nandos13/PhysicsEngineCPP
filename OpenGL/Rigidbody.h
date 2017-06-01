@@ -8,6 +8,7 @@ protected:
 	glm::vec2 m_velocity;
 	float m_angle;
 	float m_angularVelocity;
+	float m_momentInertia;
 	float m_mass;
 	float m_restitution;
 
@@ -23,6 +24,8 @@ public:
 	virtual void Update(const float deltaTime);
 
 	const glm::vec2 GetVelocity() const;
+	const float GetAngularVelocity() const;
+	const float GetMomentOfInertia() const;
 	const float GetMass() const;
 	const float GetRestitution() const;
 
@@ -30,6 +33,9 @@ public:
 	void SetMass(const float m);
 	void SetRestitution(const float r);
 
-	void ApplyForce(const glm::vec2 force);
+	const glm::vec2 GetLocalXVector() const;
+	const glm::vec2 GetLocalYVector() const;
+
+	void ApplyForce(const glm::vec2 force, const glm::vec2 position = glm::vec2(0));
 };
 

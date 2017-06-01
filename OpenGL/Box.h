@@ -12,5 +12,9 @@ public:
 
 	virtual void Draw() const;
 
+	const float GetWidth() const;
+	const float GetHeight() const;
+	const glm::vec2 GetSize() const;
+
 };
 

@@ -31,6 +31,8 @@ public:
 	const PHYS_TYPE GetType() const;
 	const glm::vec2 GetPosition() const;
 
+	void SetPosition(const glm::vec2 pos);
+
 	static void SetGravity(float value);
 };
 
