@@ -6,8 +6,15 @@ class Rigidbody : public PhysicsObject
 protected:
 
 	glm::vec2 m_velocity;
+	float m_angle;
+	float m_angularVelocity;
 	float m_mass;
 	float m_restitution;
+
+	// Local unit-vectors to store rotation
+	glm::vec2 m_localX;
+	glm::vec2 m_localY;
+	void GetLocalAxes();
 
 public:
 	Rigidbody(const glm::vec2 pos, const glm::vec2 vel, const float mass);
@@ -19,6 +26,7 @@ public:
 	const float GetMass() const;
 	const float GetRestitution() const;
 
+	void SetAngle(const float a);
 	void SetMass(const float m);
 	void SetRestitution(const float r);
 

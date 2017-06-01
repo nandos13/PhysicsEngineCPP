@@ -3,6 +3,7 @@
 #include "Plane.h"
 #include "Rigidbody.h"
 #include "Circle.h"
+#include "Box.h"
 
 using namespace glm;
 
@@ -10,11 +11,18 @@ void PhysicsApplication::StartScene()
 {
 	PhysicsObject::SetGravity(9.81f);
 
-
 	m_physObjects.clear();
 
 	// Add objects
-	m_physObjects.push_back( new Circle(glm::vec2(0), glm::vec2(1, 0), 1.0f, 0.5f) );
+	Circle* c1 = new Circle(glm::vec2(0), glm::vec2(3, 15), 1.0f, 0.5f);
+	Circle* c2 = new Circle(glm::vec2(3, -1), glm::vec2(-1, 3), 1.0f, 0.5f);
+	c2->SetRestitution(0.2f);
+	m_physObjects.push_back( c1 );
+	m_physObjects.push_back( c2 );
+
+	Box* b1 = new Box(glm::vec2(-4, 0), glm::vec2(0), 5.0f, glm::vec2(2.2f, 1.4f));
+	m_physObjects.push_back( b1 );
+
 	m_physObjects.push_back( new Plane(glm::vec2(0, -3.2f), glm::vec2(0, 1)) );
 }
 
