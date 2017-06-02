@@ -2,7 +2,10 @@
 #include "Physics.h"
 
 #include <glm\glm\glm.hpp>
+#include <list>
 #include <aie\Gizmos.h>		// TODO: Remove this when debugging is done
+
+#include "UtilityFunctions.h"
 
 // Static variable declaration
 glm::vec2 Physics::m_gravity;
@@ -12,6 +15,38 @@ const bool Physics::IsCollidingSAT(Rigidbody * objA, Rigidbody * objB)
 {
 	if (objA == nullptr || objB == nullptr)	return false;
 
+	// Get axes to check for each rigidbody
+	std::list<glm::vec2> axes;
+	axes = JakePerry::AppendList<glm::vec2>(objA->GetAxes(), objB->GetAxes());
+
+	// Check each axis
+	for (auto& iter = axes.cbegin(); iter != axes.cend(); iter++)
+	{
+		Gizmos::add2DLine(glm::vec2(0), *iter, glm::vec4(1));
+		glm::vec2 axis = *iter;
+
+		// Get extents of each Rigidbody on this axis
+		glm::vec2 extentsA = objA->GetExtents(axis);
+		glm::vec2 extentsB = objB->GetExtents(axis);
+
+		if (iter != axes.cbegin())
+			printf("XAmin: %f, XAmax: %f, XBmin: %f, XBmax: %f\n", extentsA.x, extentsA.y, extentsB.x, extentsB.y);
+
+		// Check if the extents overlap
+		if (!	(extentsA.x < extentsB.x && extentsA.y > extentsB.x)
+			&&!	(extentsB.y > extentsA.x && extentsB.y < extentsA.y)
+			&&!	(extentsA.y > extentsB.x && extentsA.y < extentsB.y)
+			&&!	(extentsB.x < extentsA.x && extentsB.y > extentsB.x))
+		{
+			// The Rigidbody objects are not overlapping on this axis. Return false
+			return false;
+		}
+	}
+
+	// All axes overlapped
+
+
+
 	// Get bounds corners for objA & objB
 	glm::vec2 p1A, p2A, p3A, p4A, p1B, p2B, p3B, p4B;
 	objA->GetBoundingPoints(p1A, p2A, p3A, p4A, &(objB->m_angle));
@@ -20,30 +55,16 @@ const bool Physics::IsCollidingSAT(Rigidbody * objA, Rigidbody * objB)
 	// TODO: Get axes to check. Check each point on these axes and check for overlap
 	
 	// TEMP DEBUG: DRAW GIZMOS TO SHOW ALIGNED BOUND BOXES
-	if (objA->m_type == BOX)
-	{
-		Gizmos::add2DLine(p1B, p2B, glm::vec4(1, 1, 1, 0.75f));
-		Gizmos::add2DLine(p2B, p3B, glm::vec4(1, 1, 1, 0.75f));
-		Gizmos::add2DLine(p3B, p4B, glm::vec4(1, 1, 1, 0.75f));
-		Gizmos::add2DLine(p4B, p1B, glm::vec4(1, 1, 1, 0.75f));
 
-		Gizmos::add2DCircle(p1B, 0.1f, 4, glm::vec4(1, 0, 0, 1));
-		Gizmos::add2DCircle(p2B, 0.1f, 4, glm::vec4(0, 1, 0, 1));
-		Gizmos::add2DCircle(p3B, 0.1f, 4, glm::vec4(0, 0, 1, 1));
-		Gizmos::add2DCircle(p4B, 0.1f, 4, glm::vec4(1, 1, 1, 1));
-	}
-	if (objB->m_type == BOX)
-	{
-		Gizmos::add2DLine(p1A, p2A, glm::vec4(1, 1, 1, 0.75f));
-		Gizmos::add2DLine(p2A, p3A, glm::vec4(1, 1, 1, 0.75f));
-		Gizmos::add2DLine(p3A, p4A, glm::vec4(1, 1, 1, 0.75f));
-		Gizmos::add2DLine(p4A, p1A, glm::vec4(1, 1, 1, 0.75f));
+	Gizmos::add2DLine(p1A, p2A, glm::vec4(1, 1, 1, 0.75f));
+	Gizmos::add2DLine(p2A, p3A, glm::vec4(1, 1, 1, 0.75f));
+	Gizmos::add2DLine(p3A, p4A, glm::vec4(1, 1, 1, 0.75f));
+	Gizmos::add2DLine(p4A, p1A, glm::vec4(1, 1, 1, 0.75f));
 
-		Gizmos::add2DCircle(p1A, 0.1f, 4, glm::vec4(1, 0, 0, 1));
-		Gizmos::add2DCircle(p2A, 0.1f, 4, glm::vec4(0, 1, 0, 1));
-		Gizmos::add2DCircle(p3A, 0.1f, 4, glm::vec4(0, 0, 1, 1));
-		Gizmos::add2DCircle(p4A, 0.1f, 4, glm::vec4(1, 1, 1, 1));
-	}
+	Gizmos::add2DCircle(p1A, 0.1f, 4, glm::vec4(1, 0, 0, 1));
+	Gizmos::add2DCircle(p2A, 0.1f, 4, glm::vec4(0, 1, 0, 1));
+	Gizmos::add2DCircle(p3A, 0.1f, 4, glm::vec4(0, 0, 1, 1));
+	Gizmos::add2DCircle(p4A, 0.1f, 4, glm::vec4(1, 1, 1, 1));
 	
 
 	return false;

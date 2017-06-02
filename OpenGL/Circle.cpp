@@ -51,3 +51,14 @@ void Circle::GetBoundingPoints(glm::vec2 & p1, glm::vec2 & p2, glm::vec2 & p3, g
 	p3 = m_position + axisX * m_radius - axisY * m_radius;
 	p4 = m_position - axisX * m_radius - axisY * m_radius;
 }
+
+/* Circles have no axes to check. Returns an empty list. */
+const std::list<glm::vec2> Circle::GetAxes() const
+{
+	return std::list<glm::vec2>();
+}
+
+const glm::vec2 Circle::GetExtents(const glm::vec2 axis) const
+{
+	return glm::vec2(glm::dot(m_position - m_radius, axis), glm::dot(m_position + m_radius, axis));
+}

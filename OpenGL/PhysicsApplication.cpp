@@ -23,12 +23,12 @@ void PhysicsApplication::StartScene()
 	Circle* c6 = new Circle(glm::vec2(4, -5), glm::vec2(0, -3), 5.0f, 0.9f);
 	c2->SetRestitution(0.2f);
 	c3->SetRestitution(0.25f);
-	m_physObjects.push_back( c1 );
-	m_physObjects.push_back( c2 );
+	//m_physObjects.push_back( c1 );
+	//m_physObjects.push_back( c2 );
 	m_physObjects.push_back( c3 );
-	m_physObjects.push_back( c4 );
-	m_physObjects.push_back( c5 );
-	m_physObjects.push_back( c6 );
+	//m_physObjects.push_back( c4 );
+	//m_physObjects.push_back( c5 );
+	//m_physObjects.push_back( c6 );
 
 	Box* b1 = new Box(glm::vec2(-4, 0), glm::vec2(0), 5.0f, glm::vec2(2.2f, 1.4f));
 	b1->SetAngle(45);

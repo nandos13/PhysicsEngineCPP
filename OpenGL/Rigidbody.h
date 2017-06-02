@@ -1,6 +1,8 @@
 #pragma once
 #include "PhysicsObject.h"
 
+#include <list>
+
 class Rigidbody : public PhysicsObject
 {
 	friend class Physics;
@@ -40,6 +42,8 @@ public:
 	const glm::vec2 GetLocalXVector() const;
 	const glm::vec2 GetLocalYVector() const;
 	virtual void GetBoundingPoints(glm::vec2& p1, glm::vec2& p2, glm::vec2& p3, glm::vec2& p4, float* localRotation = nullptr) const = 0;
+	virtual const std::list<glm::vec2> GetAxes() const = 0;
+	virtual const glm::vec2 GetExtents(const glm::vec2 axis) const = 0;
 
 	void ApplyForce(const glm::vec2 force, const glm::vec2 position = glm::vec2(0));
 };
