@@ -31,7 +31,7 @@ void PhysicsApplication::StartScene()
 	m_physObjects.push_back( c6 );
 
 	Box* b1 = new Box(glm::vec2(-4, 0), glm::vec2(0), 5.0f, glm::vec2(2.2f, 1.4f));
-	b1->SetAngle(45.0f);
+	b1->SetAngle(45);
 	b1->SetRestitution(0.1f);
 	m_physObjects.push_back( b1 );
 
@@ -89,6 +89,8 @@ void PhysicsApplication::shutdown()
 
 bool PhysicsApplication::update()
 {
+	Gizmos::clear();
+
 	camera.update(window);
 
 	float dt = 1.0f / 60.0f;
@@ -96,7 +98,6 @@ bool PhysicsApplication::update()
 	if (glfwGetKey(window, GLFW_KEY_P))
 	{
 		StartScene();
-		return true;
 	}
 	
 	// Iterate through each physics object & call update
@@ -125,8 +126,6 @@ void PhysicsApplication::draw()
 	mat4 projection = camera.getProjection();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	Gizmos::clear();
 
 	Gizmos::addTransform(glm::mat4(1));
 	vec4 orange(1, 0.7f, 0.2f, 1.0f);

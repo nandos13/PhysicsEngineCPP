@@ -18,5 +18,7 @@ public:
 	const float GetHeight() const;
 	const glm::vec2 GetSize() const;
 
+	virtual void GetBoundingPoints(glm::vec2& p1, glm::vec2& p2, glm::vec2& p3, glm::vec2& p4, float* localRotation = nullptr) const;
+
 };
 

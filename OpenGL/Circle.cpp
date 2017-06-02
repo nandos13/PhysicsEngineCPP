@@ -25,3 +25,29 @@ const float Circle::GetRadius() const
 {
 	return m_radius;
 }
+
+/**
+ * Returns the 4 corners of a bounding box in world-space. If a localRotation is specified,
+ * the bounding box will be rotated around the Circle's center position. Else, no 
+ * rotation is applied to the box.
+ */
+void Circle::GetBoundingPoints(glm::vec2 & p1, glm::vec2 & p2, glm::vec2 & p3, glm::vec2 & p4, float* localRotation) const
+{
+	glm::vec2 axisX(1, 0);
+	glm::vec2 axisY(0, 1);
+
+	// Use local rotation if one has been specified
+	if (localRotation)
+	{
+		float cs = cosf(glm::radians(*localRotation));
+		float sn = sinf(glm::radians(*localRotation));
+
+		axisX = glm::vec2(cs, sn);
+		axisY = glm::vec2(-sn, cs);
+	}
+
+	p1 = m_position - axisX * m_radius + axisY * m_radius;
+	p2 = m_position + axisX * m_radius + axisY * m_radius;
+	p3 = m_position + axisX * m_radius - axisY * m_radius;
+	p4 = m_position - axisX * m_radius - axisY * m_radius;
+}

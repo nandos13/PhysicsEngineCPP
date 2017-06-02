@@ -42,8 +42,8 @@ void Rigidbody::ResolveCollision(Rigidbody * other, glm::vec2 contactPoint, glm:
 /* Calculate & store local axes */
 void Rigidbody::GetLocalAxes()
 {
-	float cs = cosf(m_angle);
-	float sn = sinf(m_angle);
+	float cs = cosf(glm::radians(m_angle));
+	float sn = sinf(glm::radians(m_angle));
 	m_localX = glm::vec2(cs, sn);
 	m_localY = glm::vec2(-sn, cs);
 }
@@ -51,7 +51,7 @@ void Rigidbody::GetLocalAxes()
 Rigidbody::Rigidbody(const glm::vec2 pos, const glm::vec2 vel, const float mass)
 	: PhysicsObject(pos), m_velocity(vel), m_mass(mass), 
 		m_angle(0.0f), m_angularVelocity(0.0f), m_momentInertia(0.0f), m_restitution(1.0f),
-		m_localX(glm::vec2(0)), m_localY(glm::vec2(0)) {
+		m_localX(glm::vec2(1, 0)), m_localY(glm::vec2(0, 1)) {
 }
 
 Rigidbody::~Rigidbody()
@@ -61,7 +61,7 @@ Rigidbody::~Rigidbody()
 void Rigidbody::Update(const float deltaTime)
 {
 	// Update position & angle via velocity values
-	m_angle += m_angularVelocity * deltaTime;
+	m_angle += glm::degrees(m_angularVelocity) * deltaTime;
 	m_position += m_velocity * deltaTime;
 
 	// Apply gravity

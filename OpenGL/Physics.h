@@ -11,6 +11,8 @@ private:
 
 	static glm::vec2 m_gravity;
 
+	static const bool IsCollidingSAT(Rigidbody* objA, Rigidbody* objB);
+
 	static void intHandleCollision(Plane* objA, PhysicsObject* objB);
 	static void intHandleCollision(Circle* objA, PhysicsObject* objB);
 	static void intHandleCollision(Box* objA, PhysicsObject* objB);
