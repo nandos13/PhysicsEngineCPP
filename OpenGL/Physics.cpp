@@ -13,7 +13,7 @@ glm::vec2 Physics::m_gravity;
  */
 void Physics::intHandleCollision(Plane * objA, PhysicsObject * objB)
 {
-	PHYS_TYPE objBType = objB->GetType();
+	PHYS_TYPE objBType = objB->m_type;
 
 	switch (objBType)
 	{
@@ -33,7 +33,7 @@ void Physics::intHandleCollision(Plane * objA, PhysicsObject * objB)
 */
 void Physics::intHandleCollision(Circle * objA, PhysicsObject * objB)
 {
-	PHYS_TYPE objBType = objB->GetType();
+	PHYS_TYPE objBType = objB->m_type;
 
 	switch (objBType)
 	{
@@ -55,7 +55,7 @@ void Physics::intHandleCollision(Circle * objA, PhysicsObject * objB)
 */
 void Physics::intHandleCollision(Box * objA, PhysicsObject * objB)
 {
-	PHYS_TYPE objBType = objB->GetType();
+	PHYS_TYPE objBType = objB->m_type;
 
 	switch (objBType)
 	{
@@ -75,7 +75,7 @@ void Physics::HandleCollisionBase(PhysicsObject * objA, PhysicsObject * objB)
 {
 	if (objA == nullptr || objB == nullptr)	return;
 
-	PHYS_TYPE objAType = objA->GetType();
+	PHYS_TYPE objAType = objA->m_type;
 
 	switch (objAType)
 	{
@@ -123,7 +123,7 @@ void Physics::HandleCollision(Circle * objA, Plane * objB)
 
 		// Get the deflection vector
 		const float circleRestitution = objA->m_restitution;
-		glm::vec2 deltaVelocity = -(vPerp * planeNormal) * (1 + circleRestitution);
+		glm::vec2 deltaVelocity = -objA->m_mass * (vPerp * planeNormal) * (1 + circleRestitution);
 
 		// Add the force to the circle
 		objA->ApplyForce(deltaVelocity);
@@ -142,8 +142,8 @@ void Physics::HandleCollision(Plane * objA, Box * objB)
 /* Handles collision between a box and a plane */
 void Physics::HandleCollision(Box * objA, Plane * objB)
 {
-	float width = objA->GetWidth();
-	float height = objA->GetHeight();
+	float width = objA->m_size.x;
+	float height = objA->m_size.y;
 	glm::vec2 position = objA->m_position;
 	glm::vec2 localX = objA->m_localX;
 	glm::vec2 localY = objA->m_localY;
@@ -230,7 +230,21 @@ void Physics::HandleCollision(Circle * objA, Box * objB)
 /* Handles collision between two circles */
 void Physics::HandleCollision(Circle * objA, Circle * objB)
 {
-	// TODO
+	float sumOfRadii = objA->m_radius + objB->m_radius;
+	float distBetweenCircles = glm::distance(objA->m_position, objB->m_position);
+
+	// If the distance between the two circles is less than the sum of their radii, they are touching
+	if (distBetweenCircles < sumOfRadii)
+	{
+		float penetration = sumOfRadii - distBetweenCircles;
+		glm::vec2 circleAtoB = glm::normalize(objB->m_position - objA->m_position);
+
+		objA->m_position -= circleAtoB * penetration;
+		objB->m_position += circleAtoB * penetration;
+
+		glm::vec2 averagePosition = 0.5f * (objA->m_position + objB->m_position);
+		objA->ResolveCollision(objB, averagePosition);
+	}
 }
 
 /* Handles collision between two boxes */

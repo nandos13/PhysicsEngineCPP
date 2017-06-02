@@ -14,6 +14,8 @@ protected:
 	float m_mass;
 	float m_restitution;
 
+	void ResolveCollision(Rigidbody* other, glm::vec2 contactPoint, glm::vec2* direction = NULL);
+
 	// Local unit-vectors to store rotation
 	glm::vec2 m_localX;
 	glm::vec2 m_localY;

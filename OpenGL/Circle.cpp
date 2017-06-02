@@ -17,7 +17,8 @@ Circle::~Circle()
 
 void Circle::Draw() const
 {
-	Gizmos::add2DCircle(m_position, m_radius, 16, glm::vec4(1, 0, 1, 1));
+	Gizmos::add2DCircle(m_position, m_radius, 16, glm::vec4(1, 0, 1, 0.8f));
+	Gizmos::add2DCircle(m_position + m_localX * m_radius * 0.8f, m_radius * 0.1f, 6, glm::vec4(1, 1, 1, 0.5f));
 }
 
 const float Circle::GetRadius() const

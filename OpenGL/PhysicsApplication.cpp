@@ -17,9 +17,18 @@ void PhysicsApplication::StartScene()
 	// Add objects
 	Circle* c1 = new Circle(glm::vec2(0), glm::vec2(3, 15), 1.0f, 0.5f);
 	Circle* c2 = new Circle(glm::vec2(3, -1), glm::vec2(-1, 3), 1.0f, 0.5f);
+	Circle* c3 = new Circle(glm::vec2(-5, -1), glm::vec2(3, 0), 20.0f, 0.9f);
+	Circle* c4 = new Circle(glm::vec2(-4, -5), glm::vec2(0, -3), 0.5f, 0.9f);
+	Circle* c5 = new Circle(glm::vec2(0, -5), glm::vec2(0, -3), 1.0f, 0.9f);
+	Circle* c6 = new Circle(glm::vec2(4, -5), glm::vec2(0, -3), 5.0f, 0.9f);
 	c2->SetRestitution(0.2f);
+	c3->SetRestitution(0.25f);
 	m_physObjects.push_back( c1 );
 	m_physObjects.push_back( c2 );
+	m_physObjects.push_back( c3 );
+	m_physObjects.push_back( c4 );
+	m_physObjects.push_back( c5 );
+	m_physObjects.push_back( c6 );
 
 	Box* b1 = new Box(glm::vec2(-4, 0), glm::vec2(0), 5.0f, glm::vec2(2.2f, 1.4f));
 	b1->SetAngle(45.0f);
@@ -27,6 +36,9 @@ void PhysicsApplication::StartScene()
 	m_physObjects.push_back( b1 );
 
 	m_physObjects.push_back( new Plane(glm::vec2(0, -3.2f), glm::vec2(0, 1)) );
+	m_physObjects.push_back( new Plane(glm::vec2(0, -8.2f), glm::vec2(0, 1)) );
+	m_physObjects.push_back( new Plane(glm::vec2(9.5f, 0), glm::vec2(-5, 1)) );
+	m_physObjects.push_back( new Plane(glm::vec2(-9.5f, 0), glm::vec2(5, 1)) );
 }
 
 bool PhysicsApplication::startup()
