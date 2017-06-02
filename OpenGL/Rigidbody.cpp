@@ -26,7 +26,7 @@ Rigidbody::~Rigidbody()
 void Rigidbody::Update(const float deltaTime)
 {
 	// Apply gravity
-	m_velocity += m_gravity * deltaTime;
+	m_velocity += GetGravity() * deltaTime;
 
 	// Update position & angle via velocity values
 	m_angle += m_angularVelocity * deltaTime;

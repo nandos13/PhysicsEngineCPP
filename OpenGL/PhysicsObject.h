@@ -12,12 +12,14 @@ enum PHYS_TYPE
 
 class PhysicsObject
 {
-protected:
+	friend class Physics;
 
-	static glm::vec2 m_gravity;
+protected:
 
 	PHYS_TYPE m_type;
 	glm::vec2 m_position;
+
+	static const glm::vec2 GetGravity();
 
 public:
 
@@ -32,7 +34,5 @@ public:
 	const glm::vec2 GetPosition() const;
 
 	void SetPosition(const glm::vec2 pos);
-
-	static void SetGravity(float value);
 };
 

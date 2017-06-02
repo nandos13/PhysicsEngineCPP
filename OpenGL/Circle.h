@@ -2,6 +2,8 @@
 #include "Rigidbody.h"
 class Circle : public Rigidbody
 {
+	friend class Physics;
+
 protected:
 
 	float m_radius;

@@ -2,6 +2,8 @@
 #include "Rigidbody.h"
 class Box : public Rigidbody
 {
+	friend class Physics;
+
 protected:
 
 	glm::vec2 m_size;

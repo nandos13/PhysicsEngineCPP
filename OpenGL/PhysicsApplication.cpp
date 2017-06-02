@@ -1,5 +1,6 @@
 #include "PhysicsApplication.h"
 
+#include "Physics.h"
 #include "Plane.h"
 #include "Rigidbody.h"
 #include "Circle.h"
@@ -9,7 +10,7 @@ using namespace glm;
 
 void PhysicsApplication::StartScene()
 {
-	PhysicsObject::SetGravity(9.81f);
+	Physics::SetGravity(9.81f);
 
 	m_physObjects.clear();
 

@@ -9,6 +9,8 @@ class Physics
 {
 private:
 
+	static glm::vec2 m_gravity;
+
 	static void intHandleCollision(Plane* objA, PhysicsObject* objB);
 	static void intHandleCollision(Circle* objA, PhysicsObject* objB);
 	static void intHandleCollision(Box* objA, PhysicsObject* objB);
@@ -29,6 +31,9 @@ public:
 	static void HandleCollision(Circle* objA, Circle* objB);
 
 	static void HandleCollision(Box* objA, Box* objB);
+
+	static const glm::vec2 GetGravity();
+	static void SetGravity(const float value);
 
 };
 

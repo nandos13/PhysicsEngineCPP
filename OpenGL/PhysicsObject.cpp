@@ -3,9 +3,11 @@
 
 #include "Physics.h"
 
-// Static variable declaration
-glm::vec2 PhysicsObject::m_gravity;
 
+const glm::vec2 PhysicsObject::GetGravity()
+{
+	return Physics::GetGravity();
+}
 
 PhysicsObject::PhysicsObject(const glm::vec2 pos)
 	: m_position(pos), m_type(NULLTYPE) {
@@ -36,10 +38,4 @@ const glm::vec2 PhysicsObject::GetPosition() const
 void PhysicsObject::SetPosition(const glm::vec2 pos)
 {
 	m_position = pos;
-}
-
-/* Set the value of gravity in the negative-y direction. */
-void PhysicsObject::SetGravity(float value)
-{
-	m_gravity.y = 0 - value;
 }

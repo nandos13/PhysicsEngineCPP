@@ -3,6 +3,9 @@
 
 #include <glm\glm\glm.hpp>
 
+// Static variable declaration
+glm::vec2 Physics::m_gravity;
+
 /**
  * Internal use only:
  * Auto-detects the type of the second PhysicsObject parameter & handles
@@ -98,16 +101,16 @@ void Physics::HandleCollision(Circle * objA, Plane * objB)
 {
 	if (objA == nullptr || objB == nullptr)	return;
 
-	const glm::vec2 planeNormal = objB->GetNormal();
-	const float circleRadius = objA->GetRadius();
+	const glm::vec2 planeNormal = objB->m_normal;
+	const float circleRadius = objA->m_radius;
 
 	float penetration = 0;
 
 	// Get distance from circle to closest point on the plane
-	float distance = glm::dot( (objA->GetPosition() - objB->GetPosition()), objB->GetNormal() );
+	float distance = glm::dot( (objA->m_position - objB->m_position), planeNormal );
 
 	// Get the velocity in the perpendicular direction
-	float vPerp = glm::dot( objA->GetVelocity(), objB->GetNormal());
+	float vPerp = glm::dot( objA->m_velocity, planeNormal);
 
 	// Check if the objects collide this frame
 	if (	(distance > 0 && distance < circleRadius && vPerp < 0)
@@ -119,14 +122,14 @@ void Physics::HandleCollision(Circle * objA, Plane * objB)
 			penetration = distance + circleRadius;
 
 		// Get the deflection vector
-		const float circleRestitution = objA->GetRestitution();
+		const float circleRestitution = objA->m_restitution;
 		glm::vec2 deltaVelocity = -(vPerp * planeNormal) * (1 + circleRestitution);
 
 		// Add the force to the circle
 		objA->ApplyForce(deltaVelocity);
 
 		// Offset position to prevent ball from sinking into the plane
-		objA->SetPosition(objA->GetPosition() - penetration * planeNormal);
+		objA->SetPosition(objA->m_position - penetration * planeNormal);
 	}
 }
 
@@ -141,9 +144,9 @@ void Physics::HandleCollision(Box * objA, Plane * objB)
 {
 	float width = objA->GetWidth();
 	float height = objA->GetHeight();
-	glm::vec2 position = objA->GetPosition();
-	glm::vec2 localX = objA->GetLocalXVector();
-	glm::vec2 localY = objA->GetLocalYVector();
+	glm::vec2 position = objA->m_position;
+	glm::vec2 localX = objA->m_localX;
+	glm::vec2 localY = objA->m_localY;
 
 	int numberOfContacts = 0;
 	glm::vec2 contact(0, 0);
@@ -151,7 +154,7 @@ void Physics::HandleCollision(Box * objA, Plane * objB)
 	float radius = 0.5f * std::fminf(width, height);
 
 	// Find which side the center-of-mass is on
-	float comFromPlane = glm::dot(objA->GetPosition() - objB->GetPosition(), objB->GetNormal());
+	float comFromPlane = glm::dot(position - objB->m_position, objB->m_normal);
 	float penetration = 0;
 
 	// Check each corner of the box to see if it has hit the plane
@@ -161,10 +164,10 @@ void Physics::HandleCollision(Box * objA, Plane * objB)
 		{
 			// Get corner's position in world-space
 			glm::vec2 p = position + x * localX + y * localY;
-			float distFromPlane = glm::dot(p - objB->GetPosition(), objB->GetNormal());
+			float distFromPlane = glm::dot(p - objB->m_position, objB->m_normal);
 
 			// Get total velocity at the point
-			float velocityIntoPlane = glm::dot(objA->GetVelocity() + objA->GetAngularVelocity() * (-y*localX+x*localY), objB->GetNormal());
+			float velocityIntoPlane = glm::dot(objA->m_velocity + objA->m_angularVelocity * (-y*localX+x*localY), objB->m_normal);
 
 			/* If this corner is on the opposite side from the center-of-mass & also moving further into the plane,
 			 * we need to resolve the collision
@@ -192,23 +195,23 @@ void Physics::HandleCollision(Box * objA, Plane * objB)
 		float collisionVelocity = contactVelocity / (float)numberOfContacts;
 
 		// Get the acceleration required to stop or reverse the average velocity, depending on restitution
-		glm::vec2 acceleration = -objB->GetNormal() * ((1.0f + objA->GetRestitution()) * collisionVelocity);
+		glm::vec2 acceleration = -objB->m_normal * ((1.0f + objA->m_restitution) * collisionVelocity);
 
 		// Get average position at which to apply the force
 		glm::vec2 localContact = (contact / (float)numberOfContacts) - position;
 
 		// This is the perpendicular distance we apply the force at, relavite to the center-of-mass. So torque = F * r
-		float r = glm::dot(localContact, glm::vec2(objB->GetNormal().y, -objB->GetNormal().x));
+		float r = glm::dot(localContact, glm::vec2(objB->m_normal.y, -objB->m_normal.x));
 
 		/* Calculate the "effective mass". This is a combination of moment of inertia & mass, 
 		 * and tells us how much the contact point velocity will change with the force we're applying.
 		 */
-		float mass0 = 1.0f / (1.0f / objA->GetMass() + (r * r) / objA->GetMomentOfInertia());
+		float mass0 = 1.0f / (1.0f / objA->m_mass + (r * r) / objA->m_momentInertia);
 
 		// Apply the force
 		objA->ApplyForce(acceleration * mass0, localContact);
-		position -= objB->GetNormal() * penetration;
-		objA->SetPosition(position);
+
+		objA->m_position -= objB->m_normal * penetration;
 	}
 }
 
@@ -234,4 +237,15 @@ void Physics::HandleCollision(Circle * objA, Circle * objB)
 void Physics::HandleCollision(Box * objA, Box * objB)
 {
 	// TODO
+}
+
+const glm::vec2 Physics::GetGravity()
+{
+	return m_gravity;
+}
+
+/* Set the value of gravity in the negative-y direction. */
+void Physics::SetGravity(const float value)
+{
+	m_gravity.y = 0 - value;
 }

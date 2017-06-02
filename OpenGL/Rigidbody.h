@@ -3,6 +3,8 @@
 
 class Rigidbody : public PhysicsObject
 {
+	friend class Physics;
+
 protected:
 
 	glm::vec2 m_velocity;
