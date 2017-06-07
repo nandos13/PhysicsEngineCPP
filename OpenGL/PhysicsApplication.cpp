@@ -33,6 +33,7 @@ void PhysicsApplication::StartScene()
 	Box* b1 = new Box(glm::vec2(-4, 0), glm::vec2(0), 5.0f, glm::vec2(2.2f, 1.4f));
 	b1->SetAngle(45);
 	b1->SetRestitution(0.1f);
+	b1->SetKinematicState(true);
 	m_physObjects.push_back( b1 );
 
 	m_physObjects.push_back( new Plane(glm::vec2(0, -3.2f), glm::vec2(0, 1)) );
@@ -70,6 +71,7 @@ bool PhysicsApplication::startup()
 
 	Gizmos::create(65335U, 65535U, 65535U, 65535U);
 
+	m_pause = false;
 	camera.radius = 1;
 
 	StartScene();
@@ -96,10 +98,14 @@ bool PhysicsApplication::update()
 	float dt = 1.0f / 60.0f;
 
 	if (glfwGetKey(window, GLFW_KEY_P))
-	{
 		StartScene();
-	}
+
+	if (glfwGetKey(window, GLFW_KEY_SPACE))
+		m_pause = !m_pause;
 	
+	if (m_pause)
+		dt = 0;
+
 	// Iterate through each physics object & call update
 	for (auto& iter = m_physObjects.begin(); iter != m_physObjects.end(); iter++)
 	{

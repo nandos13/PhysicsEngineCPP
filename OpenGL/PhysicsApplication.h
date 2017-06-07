@@ -17,6 +17,7 @@ class PhysicsApplication : public Application
 private:
 
 	std::list<PhysicsObject*> m_physObjects;
+	bool m_pause;
 
 	void StartScene();
 

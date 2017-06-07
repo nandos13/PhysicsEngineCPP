@@ -40,7 +40,7 @@ void Rigidbody::ResolveCollision(Rigidbody * other, glm::vec2 contactPoint, glm:
 }
 
 /* Calculate & store local axes */
-void Rigidbody::GetLocalAxes()
+void Rigidbody::UpdateLocalAxes()
 {
 	float cs = cosf(glm::radians(m_angle));
 	float sn = sinf(glm::radians(m_angle));
@@ -50,7 +50,7 @@ void Rigidbody::GetLocalAxes()
 
 Rigidbody::Rigidbody(const glm::vec2 pos, const glm::vec2 vel, const float mass)
 	: PhysicsObject(pos), m_velocity(vel), m_mass(mass), 
-		m_angle(0.0f), m_angularVelocity(0.0f), m_momentInertia(0.0f), m_restitution(1.0f),
+		m_angle(0.0f), m_angularVelocity(0.0f), m_momentInertia(0.0f), m_restitution(1.0f), m_isKinematic(false),
 		m_localX(glm::vec2(1, 0)), m_localY(glm::vec2(0, 1)) {
 }
 
@@ -60,14 +60,17 @@ Rigidbody::~Rigidbody()
 
 void Rigidbody::Update(const float deltaTime)
 {
-	// Update position & angle via velocity values
-	m_angle += glm::degrees(m_angularVelocity) * deltaTime;
-	m_position += m_velocity * deltaTime;
+	if (!m_isKinematic)
+	{
+		// Update position & angle via velocity values
+		m_angle += glm::degrees(m_angularVelocity) * deltaTime;
+		m_position += m_velocity * deltaTime;
 
-	// Apply gravity
-	m_velocity += GetGravity() * deltaTime;
+		// Apply gravity
+		m_velocity += GetGravity() * deltaTime;
+	}
 
-	GetLocalAxes();
+	UpdateLocalAxes();
 }
 
 const glm::vec2 Rigidbody::GetVelocity() const
@@ -95,9 +98,15 @@ const float Rigidbody::GetRestitution() const
 	return m_restitution;
 }
 
+bool Rigidbody::GetKinematicState() const
+{
+	return m_isKinematic;
+}
+
 void Rigidbody::SetAngle(const float a)
 {
 	m_angle = a;
+	UpdateLocalAxes();
 }
 
 void Rigidbody::SetMass(const float m)
@@ -108,6 +117,11 @@ void Rigidbody::SetMass(const float m)
 void Rigidbody::SetRestitution(const float r)
 {
 	m_restitution = JakePerry::Clampf(r, 0, 1);
+}
+
+void Rigidbody::SetKinematicState(const bool state)
+{
+	m_isKinematic = state;
 }
 
 const glm::vec2 Rigidbody::GetLocalXVector() const
@@ -122,6 +136,9 @@ const glm::vec2 Rigidbody::GetLocalYVector() const
 
 void Rigidbody::ApplyForce(const glm::vec2 force, const glm::vec2 position)
 {
-	m_velocity += force / m_mass;
-	m_angularVelocity += (force.y * position.x - force.x * position.y) / (m_momentInertia);
+	if (!m_isKinematic)
+	{
+		m_velocity += force / m_mass;
+		m_angularVelocity += (force.y * position.x - force.x * position.y) / (m_momentInertia);
+	}
 }

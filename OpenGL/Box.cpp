@@ -62,7 +62,7 @@ const std::list<glm::vec2> Box::GetAxes() const
 const glm::vec2 Box::GetExtents(const glm::vec2 axis) const
 {
 	float min = std::numeric_limits<float>::max();
-	float max = std::numeric_limits<float>::min();
+	float max = -(std::numeric_limits<float>::max());
 
 	glm::vec2 p1, p2, p3, p4;
 	GetBoundingPoints(p1, p2, p3, p4);

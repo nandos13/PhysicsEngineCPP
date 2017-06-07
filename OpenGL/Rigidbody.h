@@ -16,12 +16,14 @@ protected:
 	float m_mass;
 	float m_restitution;
 
+	bool m_isKinematic;
+
 	void ResolveCollision(Rigidbody* other, glm::vec2 contactPoint, glm::vec2* direction = NULL);
 
 	// Local unit-vectors to store rotation
 	glm::vec2 m_localX;
 	glm::vec2 m_localY;
-	void GetLocalAxes();
+	void UpdateLocalAxes();
 
 public:
 	Rigidbody(const glm::vec2 pos, const glm::vec2 vel, const float mass);
@@ -34,10 +36,12 @@ public:
 	const float GetMomentOfInertia() const;
 	const float GetMass() const;
 	const float GetRestitution() const;
+	bool GetKinematicState() const;
 
 	void SetAngle(const float a);
 	void SetMass(const float m);
 	void SetRestitution(const float r);
+	void SetKinematicState(const bool state);
 
 	const glm::vec2 GetLocalXVector() const;
 	const glm::vec2 GetLocalYVector() const;

@@ -22,4 +22,12 @@ namespace JakePerry
 
 		return returnList;
 	}
+
+	template <class T>
+	const bool IsBetween(T value, T min, T max, bool includeMin = true, bool includeMax = true)
+	{
+		if (value == min)		return includeMin;
+		if (value == max)		return includeMax;
+		return (value > min && value < max);
+	}
 }
