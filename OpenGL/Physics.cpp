@@ -26,6 +26,10 @@ const bool Physics::IsCollidingSAT(Rigidbody * objA, Rigidbody * objB)
 	if (std::find(axes.cbegin(), axes.cend(), AtoB) == axes.cend())
 		axes.push_back(AtoB);
 
+	// Should we draw debug info to the screen?
+	/* NOTE: If true, all axes will be checked even if one is found to have no overlap.
+	 * This is more expensive than immediately returning false, but is needed to draw each axis visually.
+	 */
 	bool drawDebugGizmos = (objA->m_debugMode || objB->m_debugMode);
 
 	// Check each axis
@@ -50,7 +54,7 @@ const bool Physics::IsCollidingSAT(Rigidbody * objA, Rigidbody * objB)
 			// Draw axis & axis-overlap for both objects
 			Gizmos::add2DLine(axis * -100.0f, axis * 100.0f, glm::vec4(1));
 			glm::vec2 axisNormal = glm::vec2(-axis.y, axis.x);
-			glm::vec2 offset = (iter == axes.cbegin()) ? axisNormal * 0.3f : axisNormal * -0.3f;
+			glm::vec2 offset = (iter == axes.cbegin()) ? axisNormal * 0.12f : axisNormal * -0.12f;
 			glm::vec2 amin = axis * extentsA.x + offset;
 			glm::vec2 amax = axis * extentsA.y + offset;
 			glm::vec2 bmin = axis * extentsB.x - offset;
@@ -61,13 +65,13 @@ const bool Physics::IsCollidingSAT(Rigidbody * objA, Rigidbody * objB)
 			// 
 			if (pointsA.size() == 2)
 			{
-				Gizmos::add2DLine(*(pointsA.cbegin()), amin, glm::vec4(0.7f, 0.1f, 0.1f, 0.7f));
-				Gizmos::add2DLine(*(std::next(pointsA.cbegin(), 1)), amax, glm::vec4(0.7f, 0.1f, 0.1f, 0.7f));
+				Gizmos::add2DLine(*(pointsA.cbegin()), amin, glm::vec4(0.5f, 0.9f, 1.0f, 0.7f));
+				Gizmos::add2DLine(*(std::next(pointsA.cbegin(), 1)), amax, glm::vec4(0.5f, 0.9f, 1.0f, 0.7f));
 			}
 			if (pointsB.size() == 2)
 			{
-				Gizmos::add2DLine(*(pointsB.cbegin()), bmin, glm::vec4(0.7f, 0.1f, 0.1f, 0.7f));
-				Gizmos::add2DLine(*(std::next(pointsB.cbegin(), 1)), bmax, glm::vec4(0.7f, 0.1f, 0.1f, 0.7f));
+				Gizmos::add2DLine(*(pointsB.cbegin()), bmin, glm::vec4(0.5f, 0.9f, 1.0f, 0.7f));
+				Gizmos::add2DLine(*(std::next(pointsB.cbegin(), 1)), bmax, glm::vec4(0.5f, 0.9f, 1.0f, 0.7f));
 			}
 		}
 

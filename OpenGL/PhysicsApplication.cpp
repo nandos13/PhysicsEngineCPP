@@ -178,8 +178,8 @@ void PhysicsApplication::draw()
 
 	Gizmos::addTransform(glm::mat4(1));
 	vec4 orange(1, 0.7f, 0.2f, 1.0f);
-	vec4 red(1, 0, 0, 1);
-	vec4 white(1);
+	vec4 red(0.7f, 0, 0, 1);
+	vec4 white(0.7f, 0.7f, 0.7f, 1);
 	vec4 black(0, 0, 0, 1);
 	for (int i = 0; i < 21; ++i) 
 	{
