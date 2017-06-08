@@ -19,6 +19,8 @@ protected:
 	PHYS_TYPE m_type;
 	glm::vec2 m_position;
 
+	bool m_debugMode;
+
 	static const glm::vec2 GetGravity();
 
 public:
@@ -32,7 +34,9 @@ public:
 
 	const PHYS_TYPE GetType() const;
 	const glm::vec2 GetPosition() const;
+	const bool GetDebugState() const;
 
 	void SetPosition(const glm::vec2 pos);
+	void SetDebugState(bool state);
 };
 

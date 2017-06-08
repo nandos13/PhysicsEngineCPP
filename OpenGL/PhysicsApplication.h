@@ -21,6 +21,9 @@ private:
 
 	void StartScene();
 
+	//void DrawHUD();
+	//int m_selectedObject;
+
 public:
 
 	virtual bool startup();

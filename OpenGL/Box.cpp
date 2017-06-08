@@ -59,7 +59,7 @@ const std::list<glm::vec2> Box::GetAxes() const
 	return axisList;
 }
 
-const glm::vec2 Box::GetExtents(const glm::vec2 axis) const
+const glm::vec2 Box::GetExtents(const glm::vec2 axis, std::list<glm::vec2>* extentPoints) const
 {
 	float min = std::numeric_limits<float>::max();
 	float max = -(std::numeric_limits<float>::max());
@@ -73,15 +73,30 @@ const glm::vec2 Box::GetExtents(const glm::vec2 axis) const
 	cornerList.push_back(p3);
 	cornerList.push_back(p4);
 
+	glm::vec2 minPoint = glm::vec2(0);
+	glm::vec2 maxPoint = glm::vec2(0);
+
 	for (auto& iter = cornerList.cbegin(); iter != cornerList.cend(); iter++)
 	{
 		float project = glm::dot(*iter, axis);
 		if (project < min)
+		{
 			min = project;
+			minPoint = *iter;
+		}
 		if (project > max)
+		{
 			max = project;
+			maxPoint = *iter;
+		}
 	}
 
+	if (extentPoints != nullptr)
+	{
+		extentPoints->clear();
+		extentPoints->push_back(minPoint);
+		extentPoints->push_back(maxPoint);
+	}
 
 	return glm::vec2(min, max);
 }

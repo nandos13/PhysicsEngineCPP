@@ -10,7 +10,7 @@ const glm::vec2 PhysicsObject::GetGravity()
 }
 
 PhysicsObject::PhysicsObject(const glm::vec2 pos)
-	: m_position(pos), m_type(NULLTYPE) {
+	: m_position(pos), m_type(NULLTYPE), m_debugMode(false) {
 }
 
 PhysicsObject::~PhysicsObject()
@@ -35,7 +35,17 @@ const glm::vec2 PhysicsObject::GetPosition() const
 	return m_position;
 }
 
+const bool PhysicsObject::GetDebugState() const
+{
+	return m_debugMode;
+}
+
 void PhysicsObject::SetPosition(const glm::vec2 pos)
 {
 	m_position = pos;
+}
+
+void PhysicsObject::SetDebugState(bool state)
+{
+	m_debugMode = state;
 }

@@ -10,6 +10,8 @@ using namespace glm;
 
 void PhysicsApplication::StartScene()
 {
+	//m_selectedObject = 0;
+
 	Physics::SetGravity(9.81f);
 
 	m_physObjects.clear();
@@ -23,6 +25,7 @@ void PhysicsApplication::StartScene()
 	Circle* c6 = new Circle(glm::vec2(4, -5), glm::vec2(0, -3), 5.0f, 0.9f);
 	c2->SetRestitution(0.2f);
 	c3->SetRestitution(0.25f);
+	c3->SetDebugState(true);
 	//m_physObjects.push_back( c1 );
 	//m_physObjects.push_back( c2 );
 	m_physObjects.push_back( c3 );
@@ -41,6 +44,38 @@ void PhysicsApplication::StartScene()
 	m_physObjects.push_back( new Plane(glm::vec2(9.5f, 0), glm::vec2(-5, 1)) );
 	m_physObjects.push_back( new Plane(glm::vec2(-9.5f, 0), glm::vec2(5, 1)) );
 }
+
+//void PhysicsApplication::DrawHUD()
+//{
+//	unsigned int numberOfPhysObjects = (unsigned int)m_physObjects.size();
+//	if (numberOfPhysObjects > 0)
+//	{
+//		ImGui::Begin("Object Control");
+//		{
+//			// Slider to select an object
+//			ImGui::SliderInt("Object#", &m_selectedObject, 0, numberOfPhysObjects - 1);
+//
+//			// Get a reference to the selected physics object
+//			auto& objIter= std::next(m_physObjects.cbegin(), m_selectedObject);
+//			if (objIter == m_physObjects.cend())	return;
+//			PhysicsObject* obj = *objIter;
+//
+//			if (obj != nullptr)
+//			{
+//				if (ImGui::CollapsingHeader("Editable Options"))
+//				{
+//					// Debug-Mode toggle
+//					bool debugMode = obj->GetDebugState();
+//					ImGui::Checkbox("Debug Mode", &debugMode);
+//					obj->SetDebugState(debugMode);
+//				}
+//
+//				// 
+//			}
+//		}
+//		ImGui::End();
+//	}
+//}
 
 bool PhysicsApplication::startup()
 {
@@ -100,8 +135,16 @@ bool PhysicsApplication::update()
 	if (glfwGetKey(window, GLFW_KEY_P))
 		StartScene();
 
+	static bool spacePressed = false;
 	if (glfwGetKey(window, GLFW_KEY_SPACE))
-		m_pause = !m_pause;
+	{
+		if (spacePressed == false)
+			m_pause = !m_pause;
+
+		spacePressed = true;
+	}
+	else
+		spacePressed = false;
 	
 	if (m_pause)
 		dt = 0;

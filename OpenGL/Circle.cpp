@@ -58,12 +58,26 @@ const std::list<glm::vec2> Circle::GetAxes() const
 	return std::list<glm::vec2>();
 }
 
-const glm::vec2 Circle::GetExtents(const glm::vec2 axis) const
+const glm::vec2 Circle::GetExtents(const glm::vec2 axis, std::list<glm::vec2>* extentPoints) const
 {
 	glm::vec2 radiusRotated = m_radius * axis;
-	Gizmos::add2DCircle(m_position - radiusRotated, 0.1f, 4, glm::vec4(1));
-	Gizmos::add2DCircle(m_position + radiusRotated, 0.1f, 4, glm::vec4(1));
-	//return glm::vec2(glm::dot(m_position - radiusRotated, axis), glm::dot(m_position + radiusRotated, axis));
 	float centre = glm::dot(m_position, axis);
+
+	glm::vec2 minPoint = m_position - radiusRotated;
+	glm::vec2 maxPoint = m_position + radiusRotated;
+
+	if (m_debugMode)
+	{
+		Gizmos::add2DCircle(minPoint, 0.1f, 4, glm::vec4(1));
+		Gizmos::add2DCircle(maxPoint, 0.1f, 4, glm::vec4(1));
+	}
+
+	if (extentPoints != nullptr)
+	{
+		extentPoints->clear();
+		extentPoints->push_back(minPoint);
+		extentPoints->push_back(maxPoint);
+	}
+
 	return glm::vec2(centre - m_radius, centre + m_radius);
 }
