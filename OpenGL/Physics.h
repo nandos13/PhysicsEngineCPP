@@ -11,7 +11,8 @@ private:
 
 	static glm::vec2 m_gravity;
 
-	static const bool IsCollidingSAT(Rigidbody* objA, Rigidbody* objB);
+	static const bool IsCollidingSAT(Rigidbody* objA, Rigidbody* objB, glm::vec2& minTranslationVec, glm::vec2& contactPoint);
+	static const bool intAxisCheckSAT(const float firstMin, const float secondMin, const float secondMax, bool& overlap, float& overlapAmount);
 
 	static void intHandleCollision(Plane* objA, PhysicsObject* objB);
 	static void intHandleCollision(Circle* objA, PhysicsObject* objB);

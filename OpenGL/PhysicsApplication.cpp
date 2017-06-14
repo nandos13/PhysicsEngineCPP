@@ -25,19 +25,27 @@ void PhysicsApplication::StartScene()
 	Circle* c6 = new Circle(glm::vec2(4, -5), glm::vec2(0, -3), 5.0f, 0.9f);
 	c2->SetRestitution(0.2f);
 	c3->SetRestitution(0.25f);
-	c3->SetDebugState(true);
-	//m_physObjects.push_back( c1 );
+	c1->SetDebugState(true);
+	m_physObjects.push_back( c1 );
 	//m_physObjects.push_back( c2 );
-	m_physObjects.push_back( c3 );
+	//m_physObjects.push_back( c3 );
 	//m_physObjects.push_back( c4 );
 	//m_physObjects.push_back( c5 );
 	//m_physObjects.push_back( c6 );
 
-	Box* b1 = new Box(glm::vec2(-4, 0), glm::vec2(0), 5.0f, glm::vec2(2.2f, 1.4f));
+	Box* b1 = new Box(glm::vec2(-4, -1), glm::vec2(0), 5.0f, glm::vec2(2.2f, 1.4f));
+	Box* b2 = new Box(glm::vec2(2, 0), glm::vec2(0), 10.0f, glm::vec2(2.2f, 1.4f));
+	Box* b3 = new Box(glm::vec2(0, 3), glm::vec2(0), 20.0f, glm::vec2(5.0f, 0.8f));
 	b1->SetAngle(45);
+	b3->SetAngle(7);
+	b3->SetDebugState(true);
 	b1->SetRestitution(0.1f);
+	b2->SetRestitution(0.2f);
 	b1->SetKinematicState(true);
-	m_physObjects.push_back( b1 );
+	b3->SetKinematicState(true);
+	//m_physObjects.push_back( b1 );
+	//m_physObjects.push_back( b2 );
+	m_physObjects.push_back( b3 );
 
 	m_physObjects.push_back( new Plane(glm::vec2(0, -3.2f), glm::vec2(0, 1)) );
 	m_physObjects.push_back( new Plane(glm::vec2(0, -8.2f), glm::vec2(0, 1)) );
@@ -130,7 +138,7 @@ bool PhysicsApplication::update()
 
 	camera.update(window);
 
-	float dt = 1.0f / 60.0f;
+	float dt = 1.0f / 300.0f;
 
 	if (glfwGetKey(window, GLFW_KEY_P))
 		StartScene();

@@ -13,7 +13,7 @@ using namespace JakePerry;
 glm::vec2 Physics::m_gravity;
 
 /* Uses the Separating Axis Theorem to determine if two Convex-Hull Rigidbody objects are colliding */
-const bool Physics::IsCollidingSAT(Rigidbody * objA, Rigidbody * objB)
+const bool Physics::IsCollidingSAT(Rigidbody * objA, Rigidbody * objB, glm::vec2& minTranslationVec, glm::vec2& contactPoint)
 {
 	if (objA == nullptr || objB == nullptr)	return false;
 
@@ -28,12 +28,16 @@ const bool Physics::IsCollidingSAT(Rigidbody * objA, Rigidbody * objB)
 
 	// Should we draw debug info to the screen?
 	/* NOTE: If true, all axes will be checked even if one is found to have no overlap.
-	 * This is more expensive than immediately returning false, but is needed to draw each axis visually.
+	 * This is more expensive than immediately returning false, but is needed to draw gizmos for each axis.
 	 */
-	bool drawDebugGizmos = (objA->m_debugMode || objB->m_debugMode);
+	bool drawDebugGizmos = (objA->m_debugMode && objB->m_debugMode);
+	bool drawDebugContactPoint = (objA->m_debugMode || objB->m_debugMode);
 
 	// Check each axis
 	bool colliding = true;
+	float minimumTranslationLength = std::numeric_limits<float>::max();
+	glm::vec2 minimumTranslationVector = glm::vec2(0);
+
 	for (auto& iter = axes.cbegin(); iter != axes.cend(); iter++)
 	{
 		glm::vec2 axis = *iter;
@@ -75,11 +79,36 @@ const bool Physics::IsCollidingSAT(Rigidbody * objA, Rigidbody * objB)
 			}
 		}
 
+		// Individually check each overlap condition & find minimum overlap axis
+		bool overlapping = false;
+		bool thisAxisIsMinimum = false;
+
+		if (intAxisCheckSAT(aMin, bMin, bMax, overlapping, minimumTranslationLength))
+		{
+			thisAxisIsMinimum = true;
+			contactPoint = objA->m_position - axis * std::abs(minimumTranslationLength);
+		}
+		if (intAxisCheckSAT(aMax, bMin, bMax, overlapping, minimumTranslationLength))
+		{
+			thisAxisIsMinimum = true;
+			contactPoint = objA->m_position + axis * std::abs(minimumTranslationLength);
+		}
+		if (intAxisCheckSAT(bMin, aMin, aMax, overlapping, minimumTranslationLength))
+		{
+			thisAxisIsMinimum = true;
+			contactPoint = objB->m_position - axis * std::abs(minimumTranslationLength);
+		}
+		if (intAxisCheckSAT(bMax, aMin, aMax, overlapping, minimumTranslationLength))
+		{
+			thisAxisIsMinimum = true;
+			contactPoint = objB->m_position + axis * std::abs(minimumTranslationLength);
+		}
+
+		if (thisAxisIsMinimum)
+			minimumTranslationVector = axis;
+
 		// Check if the extents overlap
-		if (	!IsBetween(aMin, bMin, bMax)
-			&&	!IsBetween(aMax, bMin, bMax)
-			&&	!IsBetween(bMin, aMin, aMax)
-			&&	!IsBetween(bMax, aMin, aMax))
+		if (!overlapping)
 		{
 			// The Rigidbody objects are not overlapping on this axis. Return false
 			if (!drawDebugGizmos)
@@ -91,11 +120,41 @@ const bool Physics::IsCollidingSAT(Rigidbody * objA, Rigidbody * objB)
 
 	if (colliding)
 	{
-		// TODO:
+		// Set reference parameter for minimum translation vector
+		minTranslationVec = minimumTranslationVector * minimumTranslationLength;
+
+		if (drawDebugContactPoint)
+		{
+			Gizmos::add2DCircle(contactPoint, 0.1f, 4, glm::vec4(1));
+			Gizmos::add2DLine(glm::vec2(0), minimumTranslationVector + glm::vec2(0.1f), glm::vec4(1,0,0,1));
+		}
 
 		return true;
 	}
 
+	return false;
+}
+
+/**
+ * Internal use only:
+ * For use within Separating-Axis-Theorem function. Checks for overlap, and if overlapping, 
+ * records the minimum overlap amount.
+ * Returns true if the axis appears to be the minimum translation vector.
+ */
+const bool Physics::intAxisCheckSAT(const float firstMin, const float secondMin, const float secondMax, bool & overlap, float& overlapAmount)
+{
+	if (IsBetween(firstMin, secondMin, secondMax))
+	{
+		overlap = true;
+
+		float amount = std::fminf(std::abs(firstMin - secondMin), std::abs(firstMin - secondMax));
+
+		if (amount < overlapAmount)
+		{
+			overlapAmount = amount;
+			return true;
+		}
+	}
 	return false;
 }
 
@@ -318,7 +377,10 @@ void Physics::HandleCollision(Box * objA, Circle * objB)
 void Physics::HandleCollision(Circle * objA, Box * objB)
 {
 	// TODO
-	IsCollidingSAT(objA, objB);
+	glm::vec2 minTranslationVec = glm::vec2(0);
+	glm::vec2 contactPoint = glm::vec2(0);
+	if (IsCollidingSAT(objA, objB, minTranslationVec, contactPoint))
+		objB->ResolveCollision(objA, contactPoint, &(minTranslationVec));
 }
 
 /* Handles collision between two circles */
