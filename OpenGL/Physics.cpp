@@ -107,15 +107,14 @@ const bool Physics::IsCollidingSAT(Rigidbody * objA, Rigidbody * objB, glm::vec2
 	if (colliding)
 	{
 		// Find which extent point of objA on the axis is closest to objB
-			ExtentAClosestToB = objA->GetClosestPointOnAxis(minimumTranslationVector, objB->m_position);
+		ExtentAClosestToB = objA->GetClosestPointOnAxis(minimumTranslationVector, objB->m_position);
 
-			// Find which extent point of objB on the axis is closest to objA
-			ExtentBClosestToA = objB->GetClosestPointOnAxis(minimumTranslationVector, objA->m_position);
+		// Find which extent point of objB on the axis is closest to objA
+		ExtentBClosestToA = objB->GetClosestPointOnAxis(minimumTranslationVector, objA->m_position);
 
-			// TODO: DELETE THIS WHEN DONE
-			//glm::vec4 tempColour = (iter == axes.cbegin()) ? glm::vec4(1, 0, 0, 1) : (iter == std::next(axes.cbegin(), 1)) ? glm::vec4(0, 1, 0, 1) : glm::vec4(0, 0, 1, 1);
-			Gizmos::add2DCircle(ExtentAClosestToB, 0.05f, 4, glm::vec4(0,1,0,1));
-			Gizmos::add2DCircle(ExtentBClosestToA, 0.05f, 4, glm::vec4(0,1,0,1));
+		Gizmos::add2DCircle(ExtentAClosestToB, 0.05f, 4, glm::vec4(0,1,0,1));
+		Gizmos::add2DCircle(ExtentBClosestToA, 0.05f, 4, glm::vec4(0,1,0,1));
+
 		// Set reference parameter for minimum translation vector
 		minTranslationVec = minimumTranslationVector * minimumTranslationLength;
 

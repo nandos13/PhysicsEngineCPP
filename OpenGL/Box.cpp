@@ -156,22 +156,21 @@ const glm::vec2 Box::GetClosestPointOnAxis(const glm::vec2 axis, const glm::vec2
 		cornerTwoProj = iter->first;
 	}
 
+	// Get line from minPoint to maxPoint & find closest point on line to distPoint
+	glm::vec2 minToMax = glm::normalize(cornerTwo - cornerOne);
+	glm::vec2 axisNormal = glm::vec2(-axis.y, axis.x);
+
 	// TODO: DELETE WHEN DONE
 	Gizmos::add2DCircle(cornerOne, 0.15f, 4, glm::vec4(1, 0.2f, 0, 1));
 	Gizmos::add2DCircle(cornerTwo, 0.15f, 4, glm::vec4(1, 0.7f, 0, 1));
-
-	// Get line from minPoint to maxPoint & find closest point on line to distPoint
-	glm::vec2 minToMax = glm::normalize(cornerTwo - cornerOne);
-
 	Gizmos::add2DLine(glm::vec2(-0.08f), minToMax + glm::vec2(-0.08f), glm::vec4(0,0,1,1));
 
-	float pointProjected = glm::dot(distPoint, minToMax);
-	glm::vec2 closestPoint = minToMax * pointProjected;
+	float pointProjectedOnNormal = glm::dot(distPoint, axisNormal);
+	float cornerOneProjectedOnNormal = glm::dot(cornerOne, axisNormal);
 
-	if (cornerOneProj > cornerTwoProj)
-		closestPoint += cornerTwo;
-	else
-		closestPoint += cornerOne;
+	float projectionDistance = cornerOneProjectedOnNormal - pointProjectedOnNormal;
+
+	glm::vec2 closestPoint = (minToMax * projectionDistance) + cornerOne;
 
 	return closestPoint;
 }
