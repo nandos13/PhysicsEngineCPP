@@ -33,11 +33,14 @@ const bool Physics::IsCollidingSAT(Rigidbody * objA, Rigidbody * objB, glm::vec2
 	bool drawDebugGizmos = (objA->m_debugMode && objB->m_debugMode);
 	bool drawDebugContactPoint = (objA->m_debugMode || objB->m_debugMode);
 
+	// Set up a few variables needed to find the minimum translation vector & contact point.
+	float minimumTranslationLength = std::numeric_limits<float>::max();	// Used to find minimum, starts at max so everything found is smaller
+	glm::vec2 minimumTranslationVector = glm::vec2(0);
+	glm::vec2 ExtentAClosestToB = glm::vec2(0);	// Stores the extent point of objA closest to objB when the min translation vector is found
+	glm::vec2 ExtentBClosestToA = glm::vec2(0);
+
 	// Check each axis
 	bool colliding = true;
-	float minimumTranslationLength = std::numeric_limits<float>::max();
-	glm::vec2 minimumTranslationVector = glm::vec2(0);
-
 	for (auto& iter = axes.cbegin(); iter != axes.cend(); iter++)
 	{
 		glm::vec2 axis = *iter;
@@ -81,31 +84,14 @@ const bool Physics::IsCollidingSAT(Rigidbody * objA, Rigidbody * objB, glm::vec2
 
 		// Individually check each overlap condition & find minimum overlap axis
 		bool overlapping = false;
-		bool thisAxisIsMinimum = false;
 
-		if (intAxisCheckSAT(aMin, bMin, bMax, overlapping, minimumTranslationLength))
+		if (	intAxisCheckSAT(aMin, bMin, bMax, overlapping, minimumTranslationLength)
+			||	intAxisCheckSAT(aMax, bMin, bMax, overlapping, minimumTranslationLength)
+			||	intAxisCheckSAT(bMin, aMin, aMax, overlapping, minimumTranslationLength)
+			||	intAxisCheckSAT(bMax, aMin, aMax, overlapping, minimumTranslationLength))
 		{
-			thisAxisIsMinimum = true;
-			contactPoint = objA->m_position - axis * std::abs(minimumTranslationLength);
-		}
-		if (intAxisCheckSAT(aMax, bMin, bMax, overlapping, minimumTranslationLength))
-		{
-			thisAxisIsMinimum = true;
-			contactPoint = objA->m_position + axis * std::abs(minimumTranslationLength);
-		}
-		if (intAxisCheckSAT(bMin, aMin, aMax, overlapping, minimumTranslationLength))
-		{
-			thisAxisIsMinimum = true;
-			contactPoint = objB->m_position - axis * std::abs(minimumTranslationLength);
-		}
-		if (intAxisCheckSAT(bMax, aMin, aMax, overlapping, minimumTranslationLength))
-		{
-			thisAxisIsMinimum = true;
-			contactPoint = objB->m_position + axis * std::abs(minimumTranslationLength);
-		}
-
-		if (thisAxisIsMinimum)
 			minimumTranslationVector = axis;
+		}
 
 		// Check if the extents overlap
 		if (!overlapping)
@@ -120,13 +106,27 @@ const bool Physics::IsCollidingSAT(Rigidbody * objA, Rigidbody * objB, glm::vec2
 
 	if (colliding)
 	{
+		// Find which extent point of objA on the axis is closest to objB
+			ExtentAClosestToB = objA->GetClosestPointOnAxis(minimumTranslationVector, objB->m_position);
+
+			// Find which extent point of objB on the axis is closest to objA
+			ExtentBClosestToA = objB->GetClosestPointOnAxis(minimumTranslationVector, objA->m_position);
+
+			// TODO: DELETE THIS WHEN DONE
+			//glm::vec4 tempColour = (iter == axes.cbegin()) ? glm::vec4(1, 0, 0, 1) : (iter == std::next(axes.cbegin(), 1)) ? glm::vec4(0, 1, 0, 1) : glm::vec4(0, 0, 1, 1);
+			Gizmos::add2DCircle(ExtentAClosestToB, 0.05f, 4, glm::vec4(0,1,0,1));
+			Gizmos::add2DCircle(ExtentBClosestToA, 0.05f, 4, glm::vec4(0,1,0,1));
 		// Set reference parameter for minimum translation vector
 		minTranslationVec = minimumTranslationVector * minimumTranslationLength;
 
+		// Find contact point
+		contactPoint = (ExtentAClosestToB + ExtentBClosestToA) * 0.5f;
+
 		if (drawDebugContactPoint)
 		{
+			// TODO: DELETE THIS WHEN DONE
 			Gizmos::add2DCircle(contactPoint, 0.1f, 4, glm::vec4(1));
-			Gizmos::add2DLine(glm::vec2(0), minimumTranslationVector + glm::vec2(0.1f), glm::vec4(1,0,0,1));
+			Gizmos::add2DLine(glm::vec2(0.1f), minimumTranslationVector + glm::vec2(0.1f), glm::vec4(1,0,0,1));
 		}
 
 		return true;

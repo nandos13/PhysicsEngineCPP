@@ -75,3 +75,14 @@ const glm::vec2 Circle::GetExtents(const glm::vec2 axis, std::list<glm::vec2>* e
 
 	return glm::vec2(centre - m_radius, centre + m_radius);
 }
+
+const glm::vec2 Circle::GetClosestPointOnAxis(const glm::vec2 axis, const glm::vec2 distPoint) const
+{
+	std::list<glm::vec2> extentPoints;
+	GetExtents(axis, &extentPoints);
+
+	glm::vec2 extentPoint1 = *(extentPoints.cbegin());
+	glm::vec2 extentPoint2 = *(std::next(extentPoints.cbegin(), 1));
+
+	return (glm::distance(distPoint, extentPoint1) < glm::distance(distPoint, extentPoint2)) ? extentPoint1 : extentPoint2;
+}
