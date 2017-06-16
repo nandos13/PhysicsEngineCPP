@@ -15,7 +15,7 @@ void Rigidbody::ResolveCollision(Rigidbody * other, glm::vec2 contactPoint, glm:
 	// Find the vector between center points, or use the provided direction of force
 	glm::vec2 unitDisp = direction ? *direction : glm::normalize(other->m_position - m_position);
 
-	// 
+	// Get the normal to unitDisp
 	glm::vec2 unitParallel(unitDisp.y, -unitDisp.x);
 
 	// Calculate the total velocity of the contact points (linear & rotational)

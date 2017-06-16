@@ -3,9 +3,12 @@
 
 #include <glm\glm\glm.hpp>
 #include <list>
+#include <vector>
+#include <algorithm>
 #include <aie\Gizmos.h>		// TODO: Remove this when debugging is done
 
 #include "UtilityFunctions.h"
+#include "Time.h"
 
 using namespace JakePerry;
 
@@ -16,6 +19,8 @@ glm::vec2 Physics::m_gravity;
 const bool Physics::IsCollidingSAT(Rigidbody * objA, Rigidbody * objB, glm::vec2& minTranslationVec, glm::vec2& contactPoint)
 {
 	if (objA == nullptr || objB == nullptr)	return false;
+
+	const float floatMax = std::numeric_limits<float>::max();	// This should get optimized out, but is easier to write than the definition
 
 	// Get axes to check for each rigidbody
 	std::list<glm::vec2> axes;
@@ -31,10 +36,9 @@ const bool Physics::IsCollidingSAT(Rigidbody * objA, Rigidbody * objB, glm::vec2
 	 * This is more expensive than immediately returning false, but is needed to draw gizmos for each axis.
 	 */
 	bool drawDebugGizmos = (objA->m_debugMode && objB->m_debugMode);
-	bool drawDebugContactPoint = (objA->m_debugMode || objB->m_debugMode);
 
 	// Set up a few variables needed to find the minimum translation vector & contact point.
-	float minimumTranslationLength = std::numeric_limits<float>::max();	// Used to find minimum, starts at max so everything found is smaller
+	float minimumTranslationLength = floatMax;	// Used to find minimum, starts at max so everything found is smaller
 	glm::vec2 minimumTranslationVector = glm::vec2(0);
 	glm::vec2 ExtentAClosestToB = glm::vec2(0);	// Stores the extent point of objA closest to objB when the min translation vector is found
 	glm::vec2 ExtentBClosestToA = glm::vec2(0);
@@ -85,12 +89,58 @@ const bool Physics::IsCollidingSAT(Rigidbody * objA, Rigidbody * objB, glm::vec2
 		// Individually check each overlap condition & find minimum overlap axis
 		bool overlapping = false;
 
-		if (	intAxisCheckSAT(aMin, bMin, bMax, overlapping, minimumTranslationLength)
-			||	intAxisCheckSAT(aMax, bMin, bMax, overlapping, minimumTranslationLength)
-			||	intAxisCheckSAT(bMin, aMin, aMax, overlapping, minimumTranslationLength)
-			||	intAxisCheckSAT(bMax, aMin, aMax, overlapping, minimumTranslationLength))
+		// Set up variables for each extent point
+		float translationLengthForAMin = floatMax, translationLengthForAMax = floatMax, 
+			translationLengthForBMin = floatMax, translationLengthForBMax = floatMax;
+		bool overlapAMin = false, overlapAMax = false, overlapBMin = false, overlapBMax = false;
+
+		if (	intAxisCheckSAT(aMin, bMin, bMax, overlapAMin, translationLengthForAMin)
+			||	intAxisCheckSAT(aMax, bMin, bMax, overlapAMax, translationLengthForAMax)
+			||	intAxisCheckSAT(bMin, aMin, aMax, overlapBMin, translationLengthForBMin)
+			||	intAxisCheckSAT(bMax, aMin, aMax, overlapBMax, translationLengthForBMax))
 		{
-			minimumTranslationVector = axis;
+			// Is there any overlap?
+			overlapping = (overlapAMin || overlapAMax || overlapBMin || overlapBMax);
+			if (overlapping)
+			{
+				std::vector<float> applicablePoints;
+
+				// Find the minimum applicable translation vector
+				{
+					bool excludeObjAPoints = (overlapAMin && overlapAMax);	// objA is completely within objB in this axis
+
+					bool excludeObjBPoints = (overlapBMin && overlapBMax);	// objB is completely within objA in this axis
+
+					if (!excludeObjAPoints)
+					{
+						if (overlapAMin)
+							applicablePoints.push_back(translationLengthForAMin);
+						if (overlapAMax)
+							applicablePoints.push_back(translationLengthForAMax);
+					}
+					if (!excludeObjBPoints)
+					{
+						if (overlapBMin)
+							applicablePoints.push_back(translationLengthForBMin);
+						if (overlapBMax)
+							applicablePoints.push_back(translationLengthForBMax);
+					}
+
+					std::sort(applicablePoints.begin(), applicablePoints.end());
+
+					auto smallest = applicablePoints.cbegin();
+					if (smallest != applicablePoints.cend())
+					{
+						if (*smallest < minimumTranslationLength)
+						{
+							minimumTranslationLength = *smallest;
+							minimumTranslationVector = axis;
+						}
+					}
+				}
+
+				
+			}
 		}
 
 		// Check if the extents overlap
@@ -112,20 +162,21 @@ const bool Physics::IsCollidingSAT(Rigidbody * objA, Rigidbody * objB, glm::vec2
 		// Find which extent point of objB on the axis is closest to objA
 		ExtentBClosestToA = objB->GetClosestPointOnAxis(minimumTranslationVector, objA->m_position);
 
-		Gizmos::add2DCircle(ExtentAClosestToB, 0.05f, 4, glm::vec4(0,1,0,1));
-		Gizmos::add2DCircle(ExtentBClosestToA, 0.05f, 4, glm::vec4(0,1,0,1));
-
 		// Set reference parameter for minimum translation vector
 		minTranslationVec = minimumTranslationVector * minimumTranslationLength;
 
 		// Find contact point
 		contactPoint = (ExtentAClosestToB + ExtentBClosestToA) * 0.5f;
 
-		if (drawDebugContactPoint)
+		if (drawDebugGizmos)
 		{
-			// TODO: DELETE THIS WHEN DONE
+			// Draw contact point
 			Gizmos::add2DCircle(contactPoint, 0.1f, 4, glm::vec4(1));
 			Gizmos::add2DLine(glm::vec2(0.1f), minimumTranslationVector + glm::vec2(0.1f), glm::vec4(1,0,0,1));
+
+			// Draw extent points
+			Gizmos::add2DCircle(ExtentAClosestToB, 0.05f, 4, glm::vec4(0, 1, 0, 1));
+			Gizmos::add2DCircle(ExtentBClosestToA, 0.05f, 4, glm::vec4(0, 1, 0, 1));
 		}
 
 		return true;
@@ -379,7 +430,29 @@ void Physics::HandleCollision(Circle * objA, Box * objB)
 	glm::vec2 minTranslationVec = glm::vec2(0);
 	glm::vec2 contactPoint = glm::vec2(0);
 	if (IsCollidingSAT(objA, objB, minTranslationVec, contactPoint))
-		objB->ResolveCollision(objA, contactPoint, &(minTranslationVec));
+	{
+		if (!Time::IsPaused())
+		{
+			// Apply a contact force to prevent the objects from penetrating
+			if (!objA->m_isKinematic)
+				objA->m_position -= minTranslationVec * 0.5f;
+			
+			if (!objB->m_isKinematic)
+				objB->m_position += minTranslationVec * 0.5f;
+
+			// Normalize the translation vector
+			minTranslationVec = glm::normalize(minTranslationVec);
+
+			// Check if the vector is the 
+			glm::vec2 BtoA = objA->m_position - objB->m_position;
+			float dot = glm::dot(BtoA, minTranslationVec);
+			if (dot < 0)
+				minTranslationVec = -minTranslationVec;
+
+			// Resolve the collision
+			objB->ResolveCollision(objA, contactPoint, &(minTranslationVec));
+		}
+	}
 }
 
 /* Handles collision between two circles */
@@ -394,8 +467,10 @@ void Physics::HandleCollision(Circle * objA, Circle * objB)
 		float penetration = sumOfRadii - distBetweenCircles;
 		glm::vec2 circleAtoB = glm::normalize(objB->m_position - objA->m_position);
 
-		objA->m_position -= circleAtoB * penetration;
-		objB->m_position += circleAtoB * penetration;
+		if (!objA->m_isKinematic)
+			objA->m_position -= circleAtoB * penetration;
+		if (!objB->m_isKinematic)
+			objB->m_position += circleAtoB * penetration;
 
 		glm::vec2 averagePosition = 0.5f * (objA->m_position + objB->m_position);
 		objA->ResolveCollision(objB, averagePosition);

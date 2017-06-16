@@ -157,20 +157,25 @@ const glm::vec2 Box::GetClosestPointOnAxis(const glm::vec2 axis, const glm::vec2
 	}
 
 	// Get line from minPoint to maxPoint & find closest point on line to distPoint
-	glm::vec2 minToMax = glm::normalize(cornerTwo - cornerOne);
-	glm::vec2 axisNormal = glm::vec2(-axis.y, axis.x);
+	const glm::vec2 minToMax = glm::normalize(cornerTwo - cornerOne);
+	const glm::vec2 lineNormal = glm::vec2(-minToMax.y, minToMax.x);
 
-	// TODO: DELETE WHEN DONE
-	Gizmos::add2DCircle(cornerOne, 0.15f, 4, glm::vec4(1, 0.2f, 0, 1));
-	Gizmos::add2DCircle(cornerTwo, 0.15f, 4, glm::vec4(1, 0.7f, 0, 1));
-	Gizmos::add2DLine(glm::vec2(-0.08f), minToMax + glm::vec2(-0.08f), glm::vec4(0,0,1,1));
+	// Project some points on the line & line-normal
+	float pointProjectedOnLine = glm::dot(distPoint, minToMax);	// Project distPoint onto the line
+	float cornersProjectedOnNormal = (glm::dot(cornerOne, lineNormal) + glm::dot(cornerTwo, lineNormal)) / 2;	// Find average of corners projected onto the line's normal
+	glm::vec2 cornersProjAtNormal = lineNormal * cornersProjectedOnNormal;	// Get intercept on the normal
 
-	float pointProjectedOnNormal = glm::dot(distPoint, axisNormal);
-	float cornerOneProjectedOnNormal = glm::dot(cornerOne, axisNormal);
+	glm::vec2 closestPoint = cornersProjAtNormal + (minToMax * pointProjectedOnLine);
 
-	float projectionDistance = cornerOneProjectedOnNormal - pointProjectedOnNormal;
+	if (m_debugMode)
+	{
+		Gizmos::add2DCircle(cornerOne, 0.15f, 4, glm::vec4(1, 0.2f, 0, 1));
+		Gizmos::add2DCircle(cornerTwo, 0.15f, 4, glm::vec4(1, 0.7f, 0, 1));
+		Gizmos::add2DLine(glm::vec2(-0.08f), minToMax + glm::vec2(-0.08f), glm::vec4(0, 0, 1, 1));
 
-	glm::vec2 closestPoint = (minToMax * projectionDistance) + cornerOne;
+		Gizmos::add2DCircle(minToMax * pointProjectedOnLine, 0.08f, 5, glm::vec4(0.85f, 0.72f, 0.55f, 1));
+		Gizmos::add2DCircle(cornersProjAtNormal, 0.08f, 5, glm::vec4(0.3f, 0.72f, 0.55f, 1));
+	}
 
 	return closestPoint;
 }
