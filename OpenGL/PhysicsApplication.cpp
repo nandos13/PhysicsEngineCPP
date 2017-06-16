@@ -18,7 +18,7 @@ void PhysicsApplication::StartScene()
 	m_physObjects.clear();
 
 	// Add objects
-	Circle* c1 = new Circle(glm::vec2(0), glm::vec2(3, 15), 1.0f, 0.5f);
+	Circle* c1 = new Circle(glm::vec2(0), glm::vec2(1, 5), 1.0f, 0.5f);
 	Circle* c2 = new Circle(glm::vec2(0, 7), glm::vec2(0), 1.0f, 0.5f);
 	Circle* c3 = new Circle(glm::vec2(-5, -1), glm::vec2(3, 0), 20.0f, 0.9f);
 	Circle* c4 = new Circle(glm::vec2(-4, -5), glm::vec2(0, -3), 0.5f, 0.9f);
@@ -28,24 +28,25 @@ void PhysicsApplication::StartScene()
 	c1->SetRestitution(0.9f);
 	c3->SetRestitution(0.25f);
 	//c2->SetDebugState(true);
-	m_physObjects.push_back( c1 );
-	m_physObjects.push_back( c2 );
+	//m_physObjects.push_back( c1 );
+	//m_physObjects.push_back( c2 );
 	//m_physObjects.push_back( c3 );
 	//m_physObjects.push_back( c4 );
 	//m_physObjects.push_back( c5 );
 	//m_physObjects.push_back( c6 );
 
-	Box* b1 = new Box(glm::vec2(-4, -1), glm::vec2(0), 5.0f, glm::vec2(2.2f, 1.4f));
+	Box* b1 = new Box(glm::vec2(-4, 4), glm::vec2(0), 5.0f, glm::vec2(2.2f, 1.4f));
 	Box* b2 = new Box(glm::vec2(2, 0), glm::vec2(0), 10.0f, glm::vec2(2.2f, 1.4f));
-	Box* b3 = new Box(glm::vec2(0, 3), glm::vec2(0), 20.0f, glm::vec2(5.0f, 0.8f));
+	Box* b3 = new Box(glm::vec2(0, 3), glm::vec2(-10, 5), 20.0f, glm::vec2(5.0f, 0.8f));
 	b1->SetAngle(45);
 	b3->SetAngle(187);
-	//b3->SetDebugState(true);
+	b1->SetDebugState(true);
+	b3->SetDebugState(true);
 	b3->SetRestitution(0.4f);
 	b2->SetRestitution(0.2f);
 	b1->SetKinematicState(true);
 	//b3->SetKinematicState(true);
-	//m_physObjects.push_back( b1 );
+	m_physObjects.push_back( b1 );
 	//m_physObjects.push_back( b2 );
 	m_physObjects.push_back( b3 );
 

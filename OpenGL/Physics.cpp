@@ -426,7 +426,6 @@ void Physics::HandleCollision(Box * objA, Circle * objB)
 /* Handles collision between a circle and a box */
 void Physics::HandleCollision(Circle * objA, Box * objB)
 {
-	// TODO
 	glm::vec2 minTranslationVec = glm::vec2(0);
 	glm::vec2 contactPoint = glm::vec2(0);
 	if (IsCollidingSAT(objA, objB, minTranslationVec, contactPoint))
@@ -443,7 +442,7 @@ void Physics::HandleCollision(Circle * objA, Box * objB)
 			// Normalize the translation vector
 			minTranslationVec = glm::normalize(minTranslationVec);
 
-			// Check if the vector is the 
+			// Verify that the vector is the correct way around
 			glm::vec2 BtoA = objA->m_position - objB->m_position;
 			float dot = glm::dot(BtoA, minTranslationVec);
 			if (dot < 0)
@@ -481,6 +480,32 @@ void Physics::HandleCollision(Circle * objA, Circle * objB)
 void Physics::HandleCollision(Box * objA, Box * objB)
 {
 	// TODO
+	glm::vec2 minTranslationVec = glm::vec2(0);
+	glm::vec2 contactPoint = glm::vec2(0);
+	if (IsCollidingSAT(objA, objB, minTranslationVec, contactPoint))
+	{
+		if (!Time::IsPaused())
+		{
+			// Apply a contact force to prevent the objects from penetrating
+			if (!objA->m_isKinematic)
+				objA->m_position -= minTranslationVec * 0.5f;
+
+			if (!objB->m_isKinematic)
+				objB->m_position += minTranslationVec * 0.5f;
+
+			// Normalize the translation vector
+			minTranslationVec = glm::normalize(minTranslationVec);
+
+			// Verify that the vector is the correct way around
+			glm::vec2 BtoA = objA->m_position - objB->m_position;
+			float dot = glm::dot(BtoA, minTranslationVec);
+			if (dot < 0)
+				minTranslationVec = -minTranslationVec;
+
+			// Resolve the collision
+			objB->ResolveCollision(objA, contactPoint, &(minTranslationVec));
+		}
+	}
 }
 
 const glm::vec2 Physics::GetGravity()
