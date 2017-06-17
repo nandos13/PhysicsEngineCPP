@@ -62,11 +62,8 @@ const std::list<glm::vec2> Box::GetAxes() const
 	return axisList;
 }
 
-const glm::vec2 Box::GetExtents(const glm::vec2 axis, std::list<glm::vec2>* extentPoints) const
+const std::list<glm::vec2> Box::GetCornerList() const
 {
-	float min = std::numeric_limits<float>::max();
-	float max = -(std::numeric_limits<float>::max());
-
 	glm::vec2 p1, p2, p3, p4;
 	GetBoundingPoints(p1, p2, p3, p4);
 
@@ -75,6 +72,16 @@ const glm::vec2 Box::GetExtents(const glm::vec2 axis, std::list<glm::vec2>* exte
 	cornerList.push_back(p2);
 	cornerList.push_back(p3);
 	cornerList.push_back(p4);
+
+	return cornerList;
+}
+
+const glm::vec2 Box::GetExtents(const glm::vec2 axis, std::list<glm::vec2>* extentPoints) const
+{
+	float min = std::numeric_limits<float>::max();
+	float max = -(std::numeric_limits<float>::max());
+
+	std::list<glm::vec2> cornerList = GetCornerList();
 
 	glm::vec2 minPoint = glm::vec2(0);
 	glm::vec2 maxPoint = glm::vec2(0);
@@ -107,15 +114,12 @@ const glm::vec2 Box::GetExtents(const glm::vec2 axis, std::list<glm::vec2>* exte
 /* Finds a point on a given axis that is closest to the specified point. */
 const glm::vec2 Box::GetClosestPointOnAxis(const glm::vec2 axis, const glm::vec2 distPoint) const
 {
-	// Get all corners
-	glm::vec2 p1, p2, p3, p4;
-	GetBoundingPoints(p1, p2, p3, p4);
+	/* NOTE: This method works when trying to get a point closest to a circle, but does
+	 * not work as desired when testing against another box */
+	// TODO: Overhaul this method to work properly when finding a point close to another box
 
-	std::list<glm::vec2> cornerList;
-	cornerList.push_back(p1);
-	cornerList.push_back(p2);
-	cornerList.push_back(p3);
-	cornerList.push_back(p4);
+	// Get all corners
+	std::list<glm::vec2> cornerList = GetCornerList();
 
 	// Loop through each corner & find the two corners closest to distPoint when projected onto the axis
 	float distPointProjection = glm::dot(distPoint, axis);

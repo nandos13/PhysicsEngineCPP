@@ -12,8 +12,14 @@ using namespace glm;
 void PhysicsApplication::StartScene()
 {
 	//m_selectedObject = 0;
-
 	Physics::SetGravity(9.81f);
+
+	// Loop through & delete all objects
+	for (auto& iter = m_physObjects.begin(); iter != m_physObjects.cend(); iter++)
+	{
+		PhysicsObject* obj = *iter;
+		delete obj;
+	}
 
 	m_physObjects.clear();
 

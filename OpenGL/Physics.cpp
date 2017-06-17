@@ -138,8 +138,6 @@ const bool Physics::IsCollidingSAT(Rigidbody * objA, Rigidbody * objB, glm::vec2
 						}
 					}
 				}
-
-				
 			}
 		}
 
@@ -487,11 +485,11 @@ void Physics::HandleCollision(Box * objA, Box * objB)
 		if (!Time::IsPaused())
 		{
 			// Apply a contact force to prevent the objects from penetrating
-			if (!objA->m_isKinematic)
-				objA->m_position -= minTranslationVec * 0.5f;
-
-			if (!objB->m_isKinematic)
-				objB->m_position += minTranslationVec * 0.5f;
+			//if (!objA->m_isKinematic)
+			//	objA->m_position -= minTranslationVec * 0.5f;
+			//
+			//if (!objB->m_isKinematic)
+			//	objB->m_position += minTranslationVec * 0.5f;
 
 			// Normalize the translation vector
 			minTranslationVec = glm::normalize(minTranslationVec);
