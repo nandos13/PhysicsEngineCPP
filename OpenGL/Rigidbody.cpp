@@ -94,7 +94,7 @@ void Rigidbody::Update(const float deltaTime)
 			m_velocity += GetGravity() * deltaTime;
 
 			// Check for small velocity
-			if (glm::length(m_velocity) < 0.05f && m_angularVelocity < 1)
+			if (glm::length(m_velocity) < 0.15f && fabsf(m_angularVelocity) < 1)
 			{
 				m_sleepFrameCount++;
 				CheckSleepState();

@@ -369,7 +369,7 @@ void Physics::HandleCollision(Box * objA, Plane * objB)
 			float distFromPlane = glm::dot(p - planePos, planeNormal);
 
 			if (objA->m_debugMode)
-				Gizmos::add2DCircle(p, 0.1f, 4, glm::vec4(1));
+				Gizmos::add2DCircle(p, 0.1f, 4, glm::vec4(1,1,1,0.4f));
 
 			// Get total velocity at the point
 			glm::vec2 pointVelocity = objA->m_angularVelocity * (y*localX - x*localY);

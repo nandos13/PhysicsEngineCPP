@@ -24,8 +24,8 @@ void Box::Draw() const
 	glm::vec2 p1, p2, p3, p4;
 	GetBoundingPoints(p1, p2, p3, p4);
 
-	Gizmos::add2DTri(p1, p2, p3, glm::vec4(1, 1, 0, 0.8f));
-	Gizmos::add2DTri(p3, p4, p1, glm::vec4(0.6f, 1, 0, 0.8f));
+	Gizmos::add2DTri(p1, p2, p3, (m_isAwake) ? glm::vec4(1, 1, 0, 0.8f) : glm::vec4(0.5f, 0.76f, 0.95f, 0.8f));
+	Gizmos::add2DTri(p3, p4, p1, (m_isAwake) ? glm::vec4(0.6f, 1, 0, 0.8f) : glm::vec4(0.4f, 0.6f, 0.8f, 0.8f));
 
 	if (m_debugMode)
 	{

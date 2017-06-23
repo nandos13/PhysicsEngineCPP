@@ -26,7 +26,7 @@ void PhysicsApplication::StartScene()
 
 	// Add objects
 	Circle* c1 = new Circle(glm::vec2(0), glm::vec2(1, 5), 1.0f, 0.5f);
-	Circle* c2 = new Circle(glm::vec2(0, 7), glm::vec2(0), 1.0f, 0.5f);
+	Circle* c2 = new Circle(glm::vec2(-3, 1), glm::vec2(0), 1.0f, 0.5f);
 	Circle* c3 = new Circle(glm::vec2(-5, -1), glm::vec2(2, 0), 20.0f, 0.9f);
 	Circle* c4 = new Circle(glm::vec2(-4, 0), glm::vec2(0, 3), 0.5f, 0.9f);
 	Circle* c5 = new Circle(glm::vec2(0, -5), glm::vec2(0, -3), 1.0f, 0.9f);
@@ -44,20 +44,20 @@ void PhysicsApplication::StartScene()
 
 	Box* b1 = new Box(glm::vec2(-4, 4), glm::vec2(0), 5.0f, glm::vec2(2.2f, 1.4f));
 	Box* b2 = new Box(glm::vec2(2, 0), glm::vec2(0), 10.0f, glm::vec2(2.2f, 1.4f));
-	Box* b3 = new Box(glm::vec2(0, -3), glm::vec2(0), 20.0f, glm::vec2(4.0f, 1.8f));
+	Box* b3 = new Box(glm::vec2(-3, -1), glm::vec2(0), 20.0f, glm::vec2(2.0f, 1.8f));
 	b1->SetAngle(10);
-	b3->SetAngle(268);
+	b3->SetAngle(270);
 	//b1->SetDebugState(true);
 	b3->SetDebugState(true);
 	b3->SetRestitution(0.4f);
 	b1->SetRestitution(0.2f);
 	//b1->SetKinematicState(true);
 	//b3->SetKinematicState(true);
-	m_physObjects.push_back( b1 );
+	//m_physObjects.push_back( b1 );
 	//m_physObjects.push_back( b2 );
 	m_physObjects.push_back( b3 );
 
-	//m_physObjects.push_back( new Spring(*b1, *c1, glm::vec2(0), glm::vec2(0), 1, 1, 1) );
+	m_physObjects.push_back( new Spring(*b1, *c1, glm::vec2(0), glm::vec2(0), 1, 1, 1) );
 
 	m_physObjects.push_back( new Plane(glm::vec2(0, -3.2f), glm::vec2(0, 1)) );
 	//m_physObjects.push_back( new Plane(glm::vec2(0, -8.2f), glm::vec2(0, 1)) );
@@ -177,6 +177,11 @@ bool PhysicsApplication::update()
 	{
 		PhysicsObject* obj = (*iter);
 		obj->Update(dt);
+	}
+
+	for (auto& iter = m_physObjects.begin(); iter != m_physObjects.end(); iter++)
+	{
+		PhysicsObject* obj = (*iter);
 
 		// Check for collisions against all objects further up the list
 		for (auto iter2 = iter; iter2 != m_physObjects.end(); iter2++)
