@@ -495,6 +495,12 @@ void Physics::HandleCollision(Box * objA, Box * objB)
 	{
 		if (!Time::IsPaused())
 		{
+			// Verify that the vector is the correct way around
+			glm::vec2 BtoA = objA->m_position - objB->m_position;
+			float dot = glm::dot(BtoA, minTranslationVec);
+			if (dot < 0)
+				minTranslationVec = -minTranslationVec;
+
 			// Apply a contact force to prevent the objects from penetrating
 			//if (!objA->m_isKinematic)
 			//	objA->m_position -= minTranslationVec * 0.5f;
@@ -504,12 +510,6 @@ void Physics::HandleCollision(Box * objA, Box * objB)
 
 			// Normalize the translation vector
 			minTranslationVec = glm::normalize(minTranslationVec);
-
-			// Verify that the vector is the correct way around
-			glm::vec2 BtoA = objA->m_position - objB->m_position;
-			float dot = glm::dot(BtoA, minTranslationVec);
-			if (dot < 0)
-				minTranslationVec = -minTranslationVec;
 
 			// Resolve the collision
 			objB->ResolveCollision(objA, contactPoint, &(minTranslationVec));

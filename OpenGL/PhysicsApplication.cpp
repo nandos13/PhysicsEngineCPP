@@ -36,7 +36,7 @@ void PhysicsApplication::StartScene()
 	c3->SetRestitution(0.25f);
 	c2->SetDebugState(true);
 	//m_physObjects.push_back( c1 );
-	m_physObjects.push_back( c2 );
+	//m_physObjects.push_back( c2 );
 	//m_physObjects.push_back( c3 );
 	//m_physObjects.push_back( c4 );
 	//m_physObjects.push_back( c5 );
@@ -47,13 +47,13 @@ void PhysicsApplication::StartScene()
 	Box* b3 = new Box(glm::vec2(-3, -1), glm::vec2(0), 20.0f, glm::vec2(2.0f, 1.8f));
 	b1->SetAngle(10);
 	b3->SetAngle(268);
-	//b1->SetDebugState(true);
+	b1->SetDebugState(true);
 	b3->SetDebugState(true);
 	b3->SetRestitution(0.4f);
 	b1->SetRestitution(0.2f);
 	//b1->SetKinematicState(true);
 	//b3->SetKinematicState(true);
-	//m_physObjects.push_back( b1 );
+	m_physObjects.push_back( b1 );
 	//m_physObjects.push_back( b2 );
 	m_physObjects.push_back( b3 );
 
