@@ -7,7 +7,8 @@ enum PHYS_TYPE
 	NULLTYPE = 0,
 	PLANE = 1,
 	CIRCLE = 2,
-	BOX = 3
+	BOX = 3,
+	JOINT = 4
 };
 
 class PhysicsObject

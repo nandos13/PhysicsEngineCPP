@@ -11,7 +11,7 @@
 Box::Box(const glm::vec2 pos, const glm::vec2 vel, const float mass, const glm::vec2 size)
 	: Rigidbody(pos, vel, mass), m_size(size) {
 	m_type = BOX;
-	m_momentInertia = 1.0f / 12.0f * m_mass * m_size.x * m_size.y;
+	m_momentInertia = 1.0f / 3.0f * m_mass * m_size.x * m_size.y;
 }
 
 Box::~Box()
@@ -25,7 +25,13 @@ void Box::Draw() const
 	GetBoundingPoints(p1, p2, p3, p4);
 
 	Gizmos::add2DTri(p1, p2, p3, glm::vec4(1, 1, 0, 0.8f));
-	Gizmos::add2DTri(p3, p4, p1, glm::vec4(1, 1, 0, 0.8f));
+	Gizmos::add2DTri(p3, p4, p1, glm::vec4(0.6f, 1, 0, 0.8f));
+
+	if (m_debugMode)
+	{
+		Gizmos::add2DLine(m_position, (m_localX * (m_size.x / 2)) + m_position, glm::vec4(1, 0, 0, 1));
+		Gizmos::add2DLine(m_position, (m_localY * (m_size.y / 2)) + m_position, glm::vec4(0, 1, 0, 1));
+	}
 }
 
 const float Box::GetWidth() const

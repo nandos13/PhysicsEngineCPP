@@ -3,6 +3,7 @@
 
 #include <glm\glm\glm.hpp>
 #include "UtilityFunctions.h"
+#include "Time.h"
 
 
 /**
@@ -81,7 +82,7 @@ Rigidbody::~Rigidbody()
 
 void Rigidbody::Update(const float deltaTime)
 {
-	if (!m_isKinematic)
+	if (!m_isKinematic && !Time::IsPaused())
 	{
 		if (m_isAwake)
 		{
@@ -187,6 +188,6 @@ void Rigidbody::ApplyForce(const glm::vec2 force, const glm::vec2 position)
 	if (!m_isKinematic)
 	{
 		m_velocity += force / m_mass;
-		m_angularVelocity += (force.y * position.x - force.x * position.y) / (m_momentInertia);
+		m_angularVelocity -= (force.y * position.x - force.x * position.y) / (m_momentInertia);
 	}
 }
