@@ -6,6 +6,7 @@
 class Rigidbody : public PhysicsObject
 {
 	friend class Physics;
+	friend class Spring;
 
 protected:
 
@@ -43,6 +44,7 @@ public:
 	void SetRestitution(const float r);
 	void SetKinematicState(const bool state);
 
+	const glm::vec2 ToWorld(const glm::vec2 localPoint) const;
 	const glm::vec2 GetLocalXVector() const;
 	const glm::vec2 GetLocalYVector() const;
 	virtual void GetBoundingPoints(glm::vec2& p1, glm::vec2& p2, glm::vec2& p3, glm::vec2& p4, float* localRotation = nullptr) const = 0;

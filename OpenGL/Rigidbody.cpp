@@ -43,7 +43,7 @@ void Rigidbody::ResolveCollision(Rigidbody * other, glm::vec2 contactPoint, glm:
 void Rigidbody::UpdateLocalAxes()
 {
 	float cs = cosf(glm::radians(m_angle));
-	float sn = sinf(glm::radians(m_angle));
+	float sn = -sinf(glm::radians(m_angle));
 	m_localX = glm::vec2(cs, sn);
 	m_localY = glm::vec2(-sn, cs);
 }
@@ -122,6 +122,15 @@ void Rigidbody::SetRestitution(const float r)
 void Rigidbody::SetKinematicState(const bool state)
 {
 	m_isKinematic = state;
+}
+
+/* Returns world coordinates of the rigidbody's localPoint */
+const glm::vec2 Rigidbody::ToWorld(const glm::vec2 localPoint) const
+{
+	glm::vec2 x = localPoint.x * m_localX;
+	glm::vec2 y = localPoint.y * m_localY;
+
+	return x + y + m_position;
 }
 
 const glm::vec2 Rigidbody::GetLocalXVector() const
