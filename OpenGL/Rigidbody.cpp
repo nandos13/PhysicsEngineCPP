@@ -5,13 +5,33 @@
 #include "UtilityFunctions.h"
 
 
-/** 
+/**
+ * Checks if the Rigidbody has been barely moving for several consecutive frames,
+ * and puts the object to sleep if so. 
+ */
+void Rigidbody::CheckSleepState()
+{
+	if (m_sleepFrameCount >= 10)
+		m_isAwake = false;
+}
+
+/**
  * Resolves a collision between two Rigidbody objects. If no direction is specified,
  * an average point is found between each object's centers when deciding which direction
  * to move the objects.
  */
 void Rigidbody::ResolveCollision(Rigidbody * other, glm::vec2 contactPoint, glm::vec2 * direction)
 {
+	// Awake check
+	if (m_isAwake || other->m_isAwake)
+	{
+		m_isAwake = true;
+		m_sleepFrameCount = 0;
+
+		other->m_isAwake = true;
+		other->m_sleepFrameCount = 0;
+	}
+
 	// Find the vector between center points, or use the provided direction of force
 	glm::vec2 unitDisp = direction ? *direction : glm::normalize(other->m_position - m_position);
 
@@ -50,7 +70,8 @@ void Rigidbody::UpdateLocalAxes()
 
 Rigidbody::Rigidbody(const glm::vec2 pos, const glm::vec2 vel, const float mass)
 	: PhysicsObject(pos), m_velocity(vel), m_mass(mass), 
-		m_angle(0.0f), m_angularVelocity(0.0f), m_momentInertia(0.0f), m_restitution(1.0f), m_isKinematic(false),
+		m_angle(0.0f), m_angularVelocity(0.0f), m_momentInertia(0.0f), m_restitution(1.0f), 
+		m_isKinematic(false), m_isAwake(true), m_sleepFrameCount(0),
 		m_localX(glm::vec2(1, 0)), m_localY(glm::vec2(0, 1)) {
 }
 
@@ -62,12 +83,30 @@ void Rigidbody::Update(const float deltaTime)
 {
 	if (!m_isKinematic)
 	{
-		// Update position & angle via velocity values
-		m_angle += glm::degrees(m_angularVelocity) * deltaTime;
-		m_position += m_velocity * deltaTime;
+		if (m_isAwake)
+		{
+			// Update position & angle via velocity values
+			m_angle += glm::degrees(m_angularVelocity) * deltaTime;
+			m_position += m_velocity * deltaTime;
 
-		// Apply gravity
-		m_velocity += GetGravity() * deltaTime;
+			// Apply gravity
+			m_velocity += GetGravity() * deltaTime;
+
+			// Check for small velocity
+			if (glm::length(m_velocity) < 0.05f && m_angularVelocity < 1)
+			{
+				m_sleepFrameCount++;
+				CheckSleepState();
+			}
+			else
+				m_sleepFrameCount = 0;
+		}
+		else
+		{
+			// The object is asleep. Nullify velocities
+			m_angularVelocity = 0;
+			m_velocity = glm::vec2(0);
+		}
 	}
 
 	UpdateLocalAxes();

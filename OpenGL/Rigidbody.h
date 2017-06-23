@@ -18,6 +18,9 @@ protected:
 	float m_restitution;
 
 	bool m_isKinematic;
+	bool m_isAwake;
+	unsigned short m_sleepFrameCount;
+	void CheckSleepState();
 
 	void ResolveCollision(Rigidbody* other, glm::vec2 contactPoint, glm::vec2* direction = NULL);
 
