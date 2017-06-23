@@ -12,7 +12,7 @@
  */
 void Rigidbody::CheckSleepState()
 {
-	if (m_sleepFrameCount >= 10)
+	if (m_sleepFrameCount >= 30)
 		m_isAwake = false;
 }
 
@@ -37,11 +37,11 @@ void Rigidbody::ResolveCollision(Rigidbody * other, glm::vec2 contactPoint, glm:
 	glm::vec2 unitDisp = direction ? *direction : glm::normalize(other->m_position - m_position);
 
 	// Get the normal to unitDisp
-	glm::vec2 unitParallel(unitDisp.y, -unitDisp.x);
+	glm::vec2 unitNormal(unitDisp.y, -unitDisp.x);
 
 	// Calculate the total velocity of the contact points (linear & rotational)
-	float r1 = glm::dot(contactPoint - m_position, -unitParallel);
-	float r2 = glm::dot(contactPoint - other->m_position, unitParallel);
+	float r1 = glm::dot(contactPoint - m_position, -unitNormal);
+	float r2 = glm::dot(contactPoint - other->m_position, unitNormal);
 	float v1 = glm::dot(m_velocity, unitDisp) - r1 * m_angularVelocity;
 	float v2 = glm::dot(other->m_velocity, unitDisp) + r2 * other->m_angularVelocity;
 

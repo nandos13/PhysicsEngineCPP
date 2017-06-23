@@ -46,7 +46,7 @@ void PhysicsApplication::StartScene()
 	Box* b2 = new Box(glm::vec2(2, 0), glm::vec2(0), 10.0f, glm::vec2(2.2f, 1.4f));
 	Box* b3 = new Box(glm::vec2(-3, -1), glm::vec2(0), 20.0f, glm::vec2(2.0f, 1.8f));
 	b1->SetAngle(10);
-	b3->SetAngle(270);
+	b3->SetAngle(268);
 	//b1->SetDebugState(true);
 	b3->SetDebugState(true);
 	b3->SetRestitution(0.4f);
