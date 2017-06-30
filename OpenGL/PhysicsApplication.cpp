@@ -106,7 +106,11 @@ void PhysicsApplication::updatePoolCue()
 				{
 					// Cast object to Rigidbody
 					Rigidbody* rb = (Rigidbody*)obj;
-					rb->ApplyForce(2.0f*(m_mousePoint - m_contactPoint), m_contactPoint - rb->GetPosition());
+					if (!rb->GetKinematicState())
+					{
+						rb->WakeUp();	// Ensure the object is awake & able to receive force
+						rb->ApplyForce(2.0f*(m_mousePoint - m_contactPoint), m_contactPoint - rb->GetPosition());
+					}
 				}
 			}
 		}

@@ -46,6 +46,7 @@ public:
 	void SetMass(const float m);
 	void SetRestitution(const float r);
 	void SetKinematicState(const bool state);
+	void WakeUp();
 
 	const glm::vec2 ToWorld(const glm::vec2 localPoint) const;
 	const glm::vec2 GetLocalXVector() const;

@@ -164,6 +164,11 @@ void Rigidbody::SetKinematicState(const bool state)
 	m_isKinematic = state;
 }
 
+void Rigidbody::WakeUp()
+{
+	m_isAwake = true;
+}
+
 /* Returns world coordinates of the rigidbody's localPoint */
 const glm::vec2 Rigidbody::ToWorld(const glm::vec2 localPoint) const
 {
