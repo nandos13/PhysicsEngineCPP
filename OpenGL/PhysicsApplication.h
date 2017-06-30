@@ -16,6 +16,9 @@ class PhysicsApplication : public Application
 {
 private:
 
+	unsigned int GetWindowWidth() const;
+	unsigned int GetWindowHeight() const;
+
 	std::list<PhysicsObject*> m_physObjects;
 	bool m_pause;
 
@@ -26,9 +29,6 @@ private:
 	glm::vec2 m_mousePoint;
 	bool m_isMouseDown;
 	void updatePoolCue();
-
-	//void DrawHUD();
-	//int m_selectedObject;
 
 public:
 

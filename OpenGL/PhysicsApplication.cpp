@@ -10,6 +10,20 @@
 
 using namespace glm;
 
+unsigned int PhysicsApplication::GetWindowWidth() const
+{
+	int w = 0, h = 0;
+	glfwGetWindowSize(window, &w, &h);
+	return w;
+}
+
+unsigned int PhysicsApplication::GetWindowHeight() const
+{
+	int w = 0, h = 0;
+	glfwGetWindowSize(window, &w, &h);
+	return h;
+}
+
 void PhysicsApplication::StartScene()
 {
 	//m_selectedObject = 0;
@@ -71,7 +85,7 @@ void PhysicsApplication::updatePoolCue()
 	double x0, y0;
 	glfwGetCursorPos(window, &x0, &y0);
 	glm::mat4 view = camera.getView();
-	glm::mat4 projection = camera.getProjection();
+	glm::mat4 projection = camera.getProjection(GetWindowWidth(), GetWindowHeight());
 
 	glm::vec3 windowCoordinates = glm::vec3(x0, y0, 0);
 	glm::vec4 viewport = glm::vec4(0.0f, 0.0f, 1280, 720);
@@ -100,38 +114,6 @@ void PhysicsApplication::updatePoolCue()
 		m_isMouseDown = mouseDown;
 	}
 }
-
-//void PhysicsApplication::DrawHUD()
-//{
-//	unsigned int numberOfPhysObjects = (unsigned int)m_physObjects.size();
-//	if (numberOfPhysObjects > 0)
-//	{
-//		ImGui::Begin("Object Control");
-//		{
-//			// Slider to select an object
-//			ImGui::SliderInt("Object#", &m_selectedObject, 0, numberOfPhysObjects - 1);
-//
-//			// Get a reference to the selected physics object
-//			auto& objIter= std::next(m_physObjects.cbegin(), m_selectedObject);
-//			if (objIter == m_physObjects.cend())	return;
-//			PhysicsObject* obj = *objIter;
-//
-//			if (obj != nullptr)
-//			{
-//				if (ImGui::CollapsingHeader("Editable Options"))
-//				{
-//					// Debug-Mode toggle
-//					bool debugMode = obj->GetDebugState();
-//					ImGui::Checkbox("Debug Mode", &debugMode);
-//					obj->SetDebugState(debugMode);
-//				}
-//
-//				// 
-//			}
-//		}
-//		ImGui::End();
-//	}
-//}
 
 bool PhysicsApplication::startup()
 {
@@ -184,9 +166,9 @@ bool PhysicsApplication::update()
 {
 	Gizmos::clear();
 
-	camera.update(window);
-
 	float dt = 1.0f / 300.0f;
+
+	camera.update(window, dt);
 
 	// Scene Restart
 	if (glfwGetKey(window, GLFW_KEY_P))
@@ -243,7 +225,7 @@ bool PhysicsApplication::update()
 void PhysicsApplication::draw()
 {
 	mat4 view = camera.getView();
-	mat4 projection = camera.getProjection();
+	mat4 projection = camera.getProjection(GetWindowWidth(), GetWindowHeight());
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

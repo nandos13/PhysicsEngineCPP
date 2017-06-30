@@ -7,12 +7,11 @@ class Camera
 {
 public:
 	mat4 getView();
-	mat4 getProjection();
+	mat4 getProjection(unsigned int windowWidth, unsigned int windowHeight);
 
 	float getDistance();
 
-	void update(GLFWwindow* window);
+	void update(GLFWwindow* window, float dt);
 
-	float angle = 0;
 	float radius = 1;
 };

@@ -1,12 +1,10 @@
 #include <glm/glm/ext.hpp>
 #include "Camera.h"
 
-void Camera::update(GLFWwindow* window)
+void Camera::update(GLFWwindow* window, float dt)
 {
-	if (glfwGetKey(window, GLFW_KEY_A)) angle = angle - 0.1f;
-	if (glfwGetKey(window, GLFW_KEY_D)) angle = angle + 0.1f;
-	if (glfwGetKey(window, GLFW_KEY_W)) radius = radius - 0.01f;
-	if (glfwGetKey(window, GLFW_KEY_S)) radius = radius + 0.01f;
+	if (glfwGetKey(window, GLFW_KEY_W)) radius = radius - 8.0f * dt;
+	if (glfwGetKey(window, GLFW_KEY_S)) radius = radius + 8.0f * dt;
 }
 
 mat4 Camera::getView()
@@ -14,13 +12,13 @@ mat4 Camera::getView()
 	return glm::lookAt(vec3(0, 0, 10*radius), vec3(0, 0, 0), vec3(0, 1, 0));
 }
 
-mat4 Camera::getProjection()
+mat4 Camera::getProjection(unsigned int windowWidth, unsigned int windowHeight)
 {
 	glm::mat4 orthomatrix;
-	float left = -1.28f;
-	float right = 1.28f;
-	float top = 0.72f;
-	float bottom = -0.72f;
+	float left = -(float)(windowWidth) / 1000.0f;
+	float right = (float)(windowWidth) / 1000.0f;
+	float top = (float)(windowHeight) / 1000.0f;
+	float bottom = -(float)(windowHeight) / 1000.0f;
 	static float Znear = 0.01f;
 	static float Zfar = 1000; 
 
@@ -45,7 +43,6 @@ mat4 Camera::getProjection()
 	orthomatrix[3].z = -(Zfar + Znear) / (Zfar - Znear);
 	orthomatrix[3].w = 1;
 
-	//mat4 perspective = glm::perspective(glm::pi<float>() * 0.25f, 16 / 9.f, 0.1f, 1000.f);
 	return orthomatrix;
 }
 
