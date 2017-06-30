@@ -113,7 +113,7 @@ void PhysicsApplication::StartScenePoolTable()
 	b8->SetKinematicState(true);
 
 	// Create pool balls
-	Circle* c1 = new Circle(glm::vec2(-5, 0), glm::vec2(0), 5, 0.36f);
+	Circle* c1 = new Circle(glm::vec2(-4, 0), glm::vec2(0), 5, 0.36f);
 
 	Circle* c2 = new Circle(glm::vec2(2, 0), glm::vec2(0), 5, 0.36f);
 
