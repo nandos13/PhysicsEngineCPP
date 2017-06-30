@@ -23,6 +23,7 @@ private:
 	bool m_pause;
 
 	void StartScene();
+	void StartScenePoolTable();
 
 	// Pool cue variables
 	glm::vec2 m_contactPoint;

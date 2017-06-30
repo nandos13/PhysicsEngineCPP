@@ -26,7 +26,6 @@ unsigned int PhysicsApplication::GetWindowHeight() const
 
 void PhysicsApplication::StartScene()
 {
-	//m_selectedObject = 0;
 	Physics::SetGravity(9.81f);
 
 	// Loop through & delete all objects
@@ -79,6 +78,81 @@ void PhysicsApplication::StartScene()
 	m_physObjects.push_back( new Plane(glm::vec2(-9.5f, 0), glm::vec2(5, 1)) );
 }
 
+void PhysicsApplication::StartScenePoolTable()
+{
+	// Turn off gravity for pool simulation
+	Physics::SetGravity(0);
+
+	// Loop through & delete all objects
+	for (auto& iter = m_physObjects.begin(); iter != m_physObjects.cend(); iter++)
+	{
+		PhysicsObject* obj = *iter;
+		delete obj;
+	}
+
+	m_physObjects.clear();
+
+	// Create pool table cushions (top & bottom)
+	Box* b1 = new Box(glm::vec2(-4.0f, 6.5f), glm::vec2(0), 100, glm::vec2(6, 1));
+	b1->SetKinematicState(true);
+	Box* b2 = new Box(glm::vec2(4.0f, 6.5f), glm::vec2(0), 100, glm::vec2(6, 1));
+	b2->SetKinematicState(true);
+	Box* b3 = new Box(glm::vec2(-4.0f, -6.5f), glm::vec2(0), 100, glm::vec2(6, 1));
+	b3->SetKinematicState(true);
+	Box* b4 = new Box(glm::vec2(4.0f, -6.5f), glm::vec2(0), 100, glm::vec2(6, 1));
+	b4->SetKinematicState(true);
+
+	// Create pool table cushions (left & right)
+	Box* b5 = new Box(glm::vec2(-8.5f, 3), glm::vec2(0), 100, glm::vec2(1, 4));
+	b5->SetKinematicState(true);
+	Box* b6 = new Box(glm::vec2(8.5f, 3), glm::vec2(0), 100, glm::vec2(1, 4));
+	b6->SetKinematicState(true);
+	Box* b7 = new Box(glm::vec2(-8.5f, -3), glm::vec2(0), 100, glm::vec2(1, 4));
+	b7->SetKinematicState(true);
+	Box* b8 = new Box(glm::vec2(8.5f, -3), glm::vec2(0), 100, glm::vec2(1, 4));
+	b8->SetKinematicState(true);
+
+	// Create pool balls
+	Circle* c1 = new Circle(glm::vec2(-5, 0), glm::vec2(0), 5, 0.36f);
+
+	Circle* c2 = new Circle(glm::vec2(2, 0), glm::vec2(0), 5, 0.36f);
+
+	Circle* c3 = new Circle(glm::vec2(2.8f, 0.48f), glm::vec2(0), 5, 0.36f);
+	Circle* c4 = new Circle(glm::vec2(2.8f, -0.48f), glm::vec2(0), 5, 0.36f);
+
+	Circle* c5 = new Circle(glm::vec2(3.6f, 0), glm::vec2(0), 5, 0.36f);
+	Circle* c6 = new Circle(glm::vec2(3.6f, 0.96f), glm::vec2(0), 5, 0.36f);
+	Circle* c7 = new Circle(glm::vec2(3.6f, -0.96f), glm::vec2(0), 5, 0.36f);
+
+	// Set restitution on balls
+	c1->SetRestitution(0.6f);
+	c2->SetRestitution(0.6f);
+	c3->SetRestitution(0.6f);
+	c4->SetRestitution(0.6f);
+	c5->SetRestitution(0.6f);
+	c6->SetRestitution(0.6f);
+	c7->SetRestitution(0.6f);
+
+	// Add objects to list
+	m_physObjects.push_back(b1);
+	m_physObjects.push_back(b2);
+	m_physObjects.push_back(b3);
+	m_physObjects.push_back(b4);
+
+	m_physObjects.push_back(b5);
+	m_physObjects.push_back(b6);
+	m_physObjects.push_back(b7);
+	m_physObjects.push_back(b8);
+
+	m_physObjects.push_back(c1);
+	m_physObjects.push_back(c2);
+	m_physObjects.push_back(c3);
+	m_physObjects.push_back(c4);
+	m_physObjects.push_back(c5);
+	m_physObjects.push_back(c6);
+	m_physObjects.push_back(c7);
+}
+
 void PhysicsApplication::updatePoolCue()
 {
 	bool mouseDown = (glfwGetMouseButton(window, 0) == 1);
@@ -109,7 +183,7 @@ void PhysicsApplication::updatePoolCue()
 					if (!rb->GetKinematicState())
 					{
 						rb->WakeUp();	// Ensure the object is awake & able to receive force
-						rb->ApplyForce(2.0f*(m_mousePoint - m_contactPoint), m_contactPoint - rb->GetPosition());
+						rb->ApplyForce(30.0f*(m_mousePoint - m_contactPoint), m_contactPoint - rb->GetPosition());
 					}
 				}
 			}
@@ -151,7 +225,7 @@ bool PhysicsApplication::startup()
 	m_pause = false;
 	camera.radius = 1;
 
-	StartScene();
+	StartScenePoolTable();
 
 	return true;
 }
@@ -176,7 +250,7 @@ bool PhysicsApplication::update()
 
 	// Scene Restart
 	if (glfwGetKey(window, GLFW_KEY_P))
-		StartScene();
+		StartScenePoolTable();
 
 	// Time Pause functionality
 	{
