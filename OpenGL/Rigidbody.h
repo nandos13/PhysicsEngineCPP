@@ -16,6 +16,8 @@ protected:
 	float m_momentInertia;
 	float m_mass;
 	float m_restitution;
+	float m_drag;
+	float m_angularDrag;
 
 	bool m_isKinematic;
 	bool m_isAwake;
@@ -45,6 +47,8 @@ public:
 	void SetAngle(const float a);
 	void SetMass(const float m);
 	void SetRestitution(const float r);
+	void SetDrag(const float d);
+	void SetAngularDrag(const float d);
 	void SetKinematicState(const bool state);
 	void WakeUp();
 

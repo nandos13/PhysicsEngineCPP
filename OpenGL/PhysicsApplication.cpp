@@ -133,6 +133,22 @@ void PhysicsApplication::StartScenePoolTable()
 	c6->SetRestitution(0.6f);
 	c7->SetRestitution(0.6f);
 
+	// Set drag on balls
+	c1->SetDrag(1.7f);
+	c1->SetAngularDrag(2);
+	c2->SetDrag(1.7f);
+	c2->SetAngularDrag(2);
+	c3->SetDrag(1.7f);
+	c3->SetAngularDrag(2);
+	c4->SetDrag(1.7f);
+	c4->SetAngularDrag(2);
+	c5->SetDrag(1.7f);
+	c5->SetAngularDrag(2);
+	c6->SetDrag(1.7f);
+	c6->SetAngularDrag(2);
+	c7->SetDrag(1.7f);
+	c7->SetAngularDrag(2);
+
 	// Add objects to list
 	m_physObjects.push_back(b1);
 	m_physObjects.push_back(b2);
@@ -183,7 +199,7 @@ void PhysicsApplication::updatePoolCue()
 					if (!rb->GetKinematicState())
 					{
 						rb->WakeUp();	// Ensure the object is awake & able to receive force
-						rb->ApplyForce(30.0f*(m_mousePoint - m_contactPoint), m_contactPoint - rb->GetPosition());
+						rb->ApplyForce(50.0f*(m_mousePoint - m_contactPoint), m_contactPoint - rb->GetPosition());
 					}
 				}
 			}

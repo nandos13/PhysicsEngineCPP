@@ -72,6 +72,7 @@ void Rigidbody::UpdateLocalAxes()
 Rigidbody::Rigidbody(const glm::vec2 pos, const glm::vec2 vel, const float mass)
 	: PhysicsObject(pos), m_velocity(vel), m_mass(mass), 
 		m_angle(0.0f), m_angularVelocity(0.0f), m_momentInertia(0.0f), m_restitution(1.0f), 
+		m_drag(0.0f), m_angularDrag(0),
 		m_isKinematic(false), m_isAwake(true), m_sleepFrameCount(0),
 		m_localX(glm::vec2(1, 0)), m_localY(glm::vec2(0, 1)) {
 }
@@ -92,6 +93,31 @@ void Rigidbody::Update(const float deltaTime)
 
 			// Apply gravity
 			m_velocity += GetGravity() * deltaTime;
+
+			// Drag
+			float velMagnitude = glm::length(m_velocity);
+			if (velMagnitude > 0)
+			{
+				// Apply linear drag
+				if (m_drag > 0)
+				{
+					float difference = (1 - deltaTime * m_drag);
+					if (difference < 0)
+						m_velocity = glm::vec2(0);
+					else
+						m_velocity = m_velocity * difference;
+				}
+
+				// Apply angular drag
+				if (m_angularDrag > 0)
+				{
+					float difference = (1 - deltaTime * m_angularDrag);
+					if (difference < 0)
+						m_angularVelocity = 0;
+					else
+						m_angularVelocity = m_angularVelocity * difference;
+				}
+			}
 
 			// Check for small velocity
 			if (glm::length(m_velocity) < 0.15f && fabsf(m_angularVelocity) < 1)
@@ -157,6 +183,16 @@ void Rigidbody::SetMass(const float m)
 void Rigidbody::SetRestitution(const float r)
 {
 	m_restitution = JakePerry::Clampf(r, 0, 1);
+}
+
+void Rigidbody::SetDrag(const float d)
+{
+	m_drag = fabsf(d);
+}
+
+void Rigidbody::SetAngularDrag(const float d)
+{
+	m_angularDrag = fabsf(d);
 }
 
 void Rigidbody::SetKinematicState(const bool state)
