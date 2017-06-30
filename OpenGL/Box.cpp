@@ -34,6 +34,13 @@ void Box::Draw() const
 	}
 }
 
+bool Box::ContainsPoint(glm::vec2 point) const
+{
+	point -= m_position;
+	glm::vec2 localPoint(glm::dot(point, m_localX), glm::dot(point, m_localY));
+	return (fabsf(localPoint.x) < m_size.x * 0.5f && fabsf(localPoint.y) < m_size.y * 0.5f);
+}
+
 const float Box::GetWidth() const
 {
 	return m_size.x;

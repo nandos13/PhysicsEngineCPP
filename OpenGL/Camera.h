@@ -9,6 +9,8 @@ public:
 	mat4 getView();
 	mat4 getProjection();
 
+	float getDistance();
+
 	void update(GLFWwindow* window);
 
 	float angle = 0;

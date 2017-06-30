@@ -65,6 +65,42 @@ void PhysicsApplication::StartScene()
 	m_physObjects.push_back( new Plane(glm::vec2(-9.5f, 0), glm::vec2(5, 1)) );
 }
 
+void PhysicsApplication::updatePoolCue()
+{
+	bool mouseDown = (glfwGetMouseButton(window, 0) == 1);
+	double x0, y0;
+	glfwGetCursorPos(window, &x0, &y0);
+	glm::mat4 view = camera.getView();
+	glm::mat4 projection = camera.getProjection();
+
+	glm::vec3 windowCoordinates = glm::vec3(x0, y0, 0);
+	glm::vec4 viewport = glm::vec4(0.0f, 0.0f, 1280, 720);
+	glm::vec3 worldCoordinates = glm::unProject(windowCoordinates, view, projection, viewport);
+
+	m_mousePoint = glm::vec2(worldCoordinates.x * camera.getDistance(), worldCoordinates.y * (-camera.getDistance()));
+
+	if (mouseDown != m_isMouseDown)
+	{
+		if (mouseDown)		// The mouse button has been clicked this frame.
+			m_contactPoint = m_mousePoint;
+		else		// The mouse button has been released this frame.
+		{
+			for (auto iter = m_physObjects.begin(); iter != m_physObjects.end(); iter++)
+			{
+				PhysicsObject* obj = *iter;
+				if (obj->ContainsPoint(m_mousePoint))
+				{
+					// Cast object to Rigidbody
+					Rigidbody* rb = (Rigidbody*)obj;
+					rb->ApplyForce(2.0f*(m_mousePoint - m_contactPoint), m_contactPoint - rb->GetPosition());
+				}
+			}
+		}
+
+		m_isMouseDown = mouseDown;
+	}
+}
+
 //void PhysicsApplication::DrawHUD()
 //{
 //	unsigned int numberOfPhysObjects = (unsigned int)m_physObjects.size();
@@ -152,25 +188,32 @@ bool PhysicsApplication::update()
 
 	float dt = 1.0f / 300.0f;
 
+	// Scene Restart
 	if (glfwGetKey(window, GLFW_KEY_P))
 		StartScene();
 
-	static bool spacePressed = false;
-	if (glfwGetKey(window, GLFW_KEY_SPACE))
+	// Time Pause functionality
 	{
-		if (spacePressed == false)
-			m_pause = !m_pause;
+		static bool spacePressed = false;
+		if (glfwGetKey(window, GLFW_KEY_SPACE))
+		{
+			if (spacePressed == false)
+				m_pause = !m_pause;
 
-		spacePressed = true;
+			spacePressed = true;
+		}
+		else
+			spacePressed = false;
+
+		if (m_pause)
+			dt = 0;
+
+		Time::SetDeltaTime(dt);
+		Time::SetPause(m_pause);
 	}
-	else
-		spacePressed = false;
 
-	if (m_pause)
-		dt = 0;
-
-	Time::SetDeltaTime(dt);
-	Time::SetPause(m_pause);
+	// Pool Cue functionality
+	updatePoolCue();
 
 	// Iterate through each physics object & call update
 	for (auto& iter = m_physObjects.begin(); iter != m_physObjects.end(); iter++)
@@ -220,6 +263,10 @@ void PhysicsApplication::draw()
 	{
 		(*iter)->Draw();
 	}
+
+	// Draw pool cue line
+	if (m_isMouseDown)
+		Gizmos::add2DLine(m_mousePoint, m_contactPoint, white);
 
 	Gizmos::draw2D(projection * view);
 	

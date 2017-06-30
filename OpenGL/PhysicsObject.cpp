@@ -25,6 +25,11 @@ void PhysicsObject::CheckCollisions(PhysicsObject * other)
 	Physics::HandleCollisionBase(this, other);
 }
 
+bool PhysicsObject::ContainsPoint(glm::vec2 point) const
+{
+	return false;
+}
+
 const PHYS_TYPE PhysicsObject::GetType() const
 {
 	return m_type;

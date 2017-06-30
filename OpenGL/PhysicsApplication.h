@@ -21,6 +21,12 @@ private:
 
 	void StartScene();
 
+	// Pool cue variables
+	glm::vec2 m_contactPoint;
+	glm::vec2 m_mousePoint;
+	bool m_isMouseDown;
+	void updatePoolCue();
+
 	//void DrawHUD();
 	//int m_selectedObject;
 

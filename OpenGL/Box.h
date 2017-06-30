@@ -14,6 +14,8 @@ public:
 
 	virtual void Draw() const;
 
+	virtual bool ContainsPoint(glm::vec2 point) const;
+
 	const float GetWidth() const;
 	const float GetHeight() const;
 	const glm::vec2 GetSize() const;

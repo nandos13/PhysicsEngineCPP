@@ -33,6 +33,8 @@ public:
 	virtual void Draw() const = 0;
 	virtual void CheckCollisions(PhysicsObject* other);
 
+	virtual bool ContainsPoint(glm::vec2 point) const;
+
 	const PHYS_TYPE GetType() const;
 	const glm::vec2 GetPosition() const;
 	const bool GetDebugState() const;

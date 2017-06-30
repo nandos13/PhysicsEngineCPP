@@ -21,6 +21,13 @@ void Circle::Draw() const
 	Gizmos::add2DCircle(m_position + m_localX * m_radius * 0.8f, m_radius * 0.1f, 6, glm::vec4(1, 1, 1, 0.2f));
 }
 
+bool Circle::ContainsPoint(glm::vec2 point) const
+{
+	point -= m_position;
+	glm::vec2 localPoint(glm::dot(point, m_localX), glm::dot(point, m_localY));
+	return (fabsf(localPoint.x) < m_radius && fabsf(localPoint.y) < m_radius);
+}
+
 const float Circle::GetRadius() const
 {
 	return m_radius;

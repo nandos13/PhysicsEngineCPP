@@ -48,3 +48,8 @@ mat4 Camera::getProjection()
 	//mat4 perspective = glm::perspective(glm::pi<float>() * 0.25f, 16 / 9.f, 0.1f, 1000.f);
 	return orthomatrix;
 }
+
+float Camera::getDistance()
+{
+	return 10.0f * radius;
+}
