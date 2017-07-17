@@ -19,10 +19,16 @@ protected:
 	float m_drag;
 	float m_angularDrag;
 
+	float m_angularVelocityPrevious;
+
 	bool m_isKinematic;
 	bool m_isAwake;
-	unsigned short m_sleepFrameCount;
+	float m_inactiveTime;
 	void CheckSleepState();
+	bool QualifiedForSleep() const;
+	static const float m_sleepVelocityQualifier;
+	static const float m_sleepAngularVelocityQualifier;
+	/* Sleep Qualifier variables are static & const. Defined at top of Rigidbody.cpp file. */
 
 	void ResolveCollision(Rigidbody* other, glm::vec2 contactPoint, glm::vec2* direction = NULL);
 
@@ -62,4 +68,3 @@ public:
 
 	void ApplyForce(const glm::vec2 force, const glm::vec2 position = glm::vec2(0));
 };
-

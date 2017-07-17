@@ -353,7 +353,6 @@ void Physics::HandleCollision(Box * objA, Plane * objB)
 	int numberOfContacts = 0;
 	glm::vec2 contact(0, 0);
 	float contactVelocity = 0;
-	float radius = 0.5f * std::fminf(width, height);
 
 	// Find which side the center-of-mass is on
 	float comFromPlane = glm::dot(position - planePos, planeNormal);

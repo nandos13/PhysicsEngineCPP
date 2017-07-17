@@ -6,14 +6,28 @@
 #include "Time.h"
 
 
+const float Rigidbody::m_sleepVelocityQualifier = 1.0f;
+const float Rigidbody::m_sleepAngularVelocityQualifier = 5.0f;
+
 /**
  * Checks if the Rigidbody has been barely moving for several consecutive frames,
  * and puts the object to sleep if so. 
  */
 void Rigidbody::CheckSleepState()
 {
-	if (m_sleepFrameCount >= 30)
+	if (m_inactiveTime >= 1.5f)
 		m_isAwake = false;
+}
+
+bool Rigidbody::QualifiedForSleep() const
+{
+	float velVectorLength = glm::length(m_velocity);
+	float angularVelAbsolute = fabsf(m_angularVelocity);
+
+	return (	velVectorLength < m_sleepVelocityQualifier
+			&&	angularVelAbsolute < m_sleepAngularVelocityQualifier
+			&&	angularVelAbsolute <= fabsf(m_angularVelocityPrevious)
+			);
 }
 
 /**
@@ -23,14 +37,18 @@ void Rigidbody::CheckSleepState()
  */
 void Rigidbody::ResolveCollision(Rigidbody * other, glm::vec2 contactPoint, glm::vec2 * direction)
 {
-	// Awake check
-	if (m_isAwake || other->m_isAwake)
+	// Awake check. Check if one object is awake and the other is not.
+	if (m_isAwake != other->m_isAwake)
 	{
-		m_isAwake = true;
-		m_sleepFrameCount = 0;
+		// Check if one of the objects is moving too fast to be sleep qualified
+		if (!QualifiedForSleep() || !other->QualifiedForSleep())
+		{
+			m_isAwake = true;
+			m_inactiveTime = 0;
 
-		other->m_isAwake = true;
-		other->m_sleepFrameCount = 0;
+			other->m_isAwake = true;
+			other->m_inactiveTime = 0;
+		}
 	}
 
 	// Find the vector between center points, or use the provided direction of force
@@ -73,7 +91,8 @@ Rigidbody::Rigidbody(const glm::vec2 pos, const glm::vec2 vel, const float mass)
 	: PhysicsObject(pos), m_velocity(vel), m_mass(mass), 
 		m_angle(0.0f), m_angularVelocity(0.0f), m_momentInertia(0.0f), m_restitution(1.0f), 
 		m_drag(0.0f), m_angularDrag(0),
-		m_isKinematic(false), m_isAwake(true), m_sleepFrameCount(0),
+		m_angularVelocityPrevious(0.0f),
+		m_isKinematic(false), m_isAwake(true), m_inactiveTime(0.0f),
 		m_localX(glm::vec2(1, 0)), m_localY(glm::vec2(0, 1)) {
 }
 
@@ -87,6 +106,8 @@ void Rigidbody::Update(const float deltaTime)
 	{
 		if (m_isAwake)
 		{
+			m_angularVelocityPrevious = m_angularVelocity;
+
 			// Update position & angle via velocity values
 			m_angle += glm::degrees(m_angularVelocity) * deltaTime;
 			m_position += m_velocity * deltaTime;
@@ -120,13 +141,13 @@ void Rigidbody::Update(const float deltaTime)
 			}
 
 			// Check for small velocity
-			if (glm::length(m_velocity) < 0.15f && fabsf(m_angularVelocity) < 1)
+			if (QualifiedForSleep())
 			{
-				m_sleepFrameCount++;
+				m_inactiveTime += deltaTime;
 				CheckSleepState();
 			}
 			else
-				m_sleepFrameCount = 0;
+				m_inactiveTime = 0.0f;
 		}
 		else
 		{

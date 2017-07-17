@@ -136,7 +136,6 @@ const glm::vec2 Box::GetClosestPointOnAxis(const glm::vec2 axis, const glm::vec2
 
 	// Loop through each corner & find the two corners closest to distPoint when projected onto the axis
 	float distPointProjection = glm::dot(distPoint, axis);
-	float minDistance = std::numeric_limits<float>::max();
 
 	std::vector<std::pair<float, glm::vec2>> differenceValues;
 
